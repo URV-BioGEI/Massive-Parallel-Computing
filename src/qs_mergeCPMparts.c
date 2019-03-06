@@ -63,7 +63,7 @@ void merge2(int* val, int n, int *vo)
 		// si hem acabat amb el vector j o no hem acabat el vector i & el valor al vector i es menor o igual que el valor al vector j 
 		if (((posi < n/2) && (val[posi] <= val[posj])) || (posj >= n)) 
 			vo[i] = val[posi++];
-		else if (posj < n) //? 
+		else //? 
 			vo[i] = val[posj++];
 }
 
