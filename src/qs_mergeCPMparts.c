@@ -3,10 +3,10 @@
 #include <assert.h>  
 
 #define NN 384000000  // 384000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 1,43 GB de dades (com a màxim) carregades a memoria
-#define MAX_INT ((int) ((unsigned int) (-1)>>1) )  // Definim el valor màxim d'un enter segons la màquina
+#define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
 
-int valors[NN+1];  
-int valors2[NN+1];
+int valors[NN + 1];  
+int valors2[NN + 1];
 
 // Funció quicksort
 // int pointer *val: Punter que apunta a un vector de dades compartit en memoria. 
@@ -14,7 +14,7 @@ int valors2[NN+1];
 // per tant l'índex màxim per a accedir al vector *val és ne - 1 
 void qs(int *val, int ne)
 {
-	int i, f, j;  // i es l'index per l'esquerra, f index per la dreta j //?
+	int i, f;  // i es l'index per l'esquerra, f index per la dreta 
 	int pivot, vtmp, vfi;  // valor pivot contra el que ordenarem, vtmp valor que estem ordenant, vfi variable auxiliar que conté el valor a ordenar
 	//quan acabem de colocar un valor DESPRÉS del pivot, ja que no tenim espais buits i la necessitem.
 
@@ -53,8 +53,7 @@ void qs(int *val, int ne)
 // 
 void merge2(int* val, int n, int *vo)
 {
-	int vtmp; //?
-	int i, j, posi, posj; //? j XQ
+	int i, posi, posj; 
 
 	posi = 0;  // posicio inicial en el vector esquerra
 	posj = (n / 2);  // posicio inicial en el vector dret //? redundant parenthesis
@@ -63,7 +62,7 @@ void merge2(int* val, int n, int *vo)
 		// si hem acabat amb el vector j o no hem acabat el vector i & el valor al vector i es menor o igual que el valor al vector j 
 		if (((posi < n/2) && (val[posi] <= val[posj])) || (posj >= n)) 
 			vo[i] = val[posi++];
-		else //? 
+		else 
 			vo[i] = val[posj++];
 }
 
