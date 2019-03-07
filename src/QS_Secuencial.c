@@ -103,6 +103,7 @@ int main(int nargs, char* args[])
 	vout = valors2;
 	for (m = 2 * porcio; m <= ndades; m *= 2)
 	{
+		#pragma omp parallel for
 		for (i = 0; i < ndades; i += m)
 			merge2(&vin[i], m, &vout[i]);
 		vtmp = vin;

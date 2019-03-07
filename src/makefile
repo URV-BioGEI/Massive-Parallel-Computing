@@ -5,7 +5,7 @@ QS_Secuencial : QS_Secuencial.c
 	$(CC) $(CFLAGS) -o QS_Secuencial QS_Secuencial.c
 
 run : QS_Secuencial
-	./QS_Secuencial 300000000 2
+	time ./QS_Secuencial 300000000 2
 
 .PHONY : clean
 clean :
