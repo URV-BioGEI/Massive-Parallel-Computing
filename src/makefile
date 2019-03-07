@@ -1,12 +1,13 @@
 CC = gcc
-CFLAGS = -O3 -Wall
+CFLAGS = -O3 -Wall -fopenmp
 
-QS_Secuencial: QS_Secuencial.c
+QS_Secuencial : QS_Secuencial.c
 	$(CC) $(CFLAGS) -o QS_Secuencial QS_Secuencial.c
 
-run: QS_Secuencial
+run : QS_Secuencial
 	./QS_Secuencial 300000000 2
 
-clean: QS_Secuencial
-	rm QS_Secuencial
+.PHONY : clean
+clean :
+	-rm QS_Secuencial
 

@@ -1,7 +1,7 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <ompt.h>  
+#include <omp.h>
 
 #define NN 384000000  // 384000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 1,43 GB de dades (com a màxim) carregades a memoria
 #define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
@@ -94,7 +94,7 @@ int main(int nargs, char* args[])
 	porcio = ndades / parts;
 
 	// Quicksort a parts
-	#pragma omp parallel for
+	#pragma omp parallel for
 	for (i = 0; i < parts; i++)
 		qs(&valors[i * porcio], porcio);
 
