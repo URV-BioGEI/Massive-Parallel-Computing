@@ -1,6 +1,7 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>  
+#include <assert.h>
+#include <ompt.h>  
 
 #define NN 384000000  // 384000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 1,43 GB de dades (com a màxim) carregades a memoria
 #define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
@@ -43,14 +44,17 @@ void qs(int *val, int ne)
 	// sub vectors es trobin ordenats
  
  	// En principi aquests dos ifs s'activen i porten dues trucades recursives que reordenen els dos subvectors
- 	// Si no es aixi, vol dir que el pivot escollit era major o menor que la resta d'elements en l'array (es el pitjor cas al escollir un pivot) 
+ 	// Si no es aixi, vol dir que el pivot escollit era major o menor que la resta d'elements en l'array (es el pitjor cas al escollir un pivot)
+	// o bé que el vector es molt curt 
  	// Després repartim els dos subvectors en dues crides recursives, recalculant els indexos que passem a la funció
-	if (f > 1) qs(val, f);  
-	if (i < ne - 1) qs(&val[i], ne - f - 1);
+	if (f > 1) qs(val, f);  // reordena el vector esquerra
+	if (i < ne - 1) qs(&val[i], ne - f - 1);  // reordena el vector dret
 }
 
 // Funció merge
-// 
+// S'encarrega de mesclar dos vectors ordenats i contigus en memoria de la mateixa mida per a obtenir un vector output ordenat, 
+// situat en un altre espai de memoria.
+
 void merge2(int* val, int n, int *vo)
 {
 	int i, posi, posj; 
@@ -66,7 +70,7 @@ void merge2(int* val, int n, int *vo)
 			vo[i] = val[posj++];
 }
 
-int main(int nargs,char* args[])
+int main(int nargs, char* args[])
 {
 	int ndades, i, m, parts, porcio;
 	int *vin, *vout, *vtmp;
@@ -90,6 +94,7 @@ int main(int nargs,char* args[])
 	porcio = ndades / parts;
 
 	// Quicksort a parts
+	#pragma omp parallel for
 	for (i = 0; i < parts; i++)
 		qs(&valors[i * porcio], porcio);
 
@@ -102,7 +107,7 @@ int main(int nargs,char* args[])
 			merge2(&vin[i], m, &vout[i]);
 		vtmp = vin;
 		vin = vout;
-    	vout = vtmp;
+    		vout = vtmp;
   	}
 
 	// Validacio
