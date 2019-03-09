@@ -20,11 +20,30 @@ ssh 39932490-M@portal.lab.deim
 '''
 
 ## Per a copiar fitxers
-
+Copiem utilitzant la copia remota
+'''
 scp -P 8888 nomfitxer 39932490-M@localhost:.
-
+'''
 Nota: Tots els 8888 corresponen a un port arbitrari
+ 
+o bé clonem el repositori (let's be intelligent all together)
 
+## Per a compilar
+Utilitzem el makefile situannos a la carpeta src
+'''
+make QS_Paralel
+'''
 
+## Per executar
+per a executar al servidor zoo ho fem tal cual. Podem fer servir la 
+execucio definida al makefile per a mesurar el temps
+'''
+make time_P
+'''
+
+Per a executar a gat hem de fer servir la comanda d'execucio remota.
+'''
+srun -p gat time ./QS_Paralel 300000000 32
+'''
 
 
