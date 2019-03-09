@@ -91,24 +91,21 @@ int main(int nargs, char* args[])
 		assert("N ha de ser divisible per parts" == 0);
 
 	for (i = 0; i < ndades; i++) 
-		valors[i] = rand() % MAX_INT;
+		valors[i] = rand();
 
 	porcio = ndades / parts;
 
 	// Quicksort a parts
-	#pragma omp parallel for
+	#pragma omp parallel for default(none) firstprivate(porcio, parts) shared(valors)
 	for (i = 0; i < parts; i++)
-	{
 		qs(&valors[i * porcio], porcio);
-		printf("%d", omp_get_num_threads();
-	}
 
 	// Merge en arbre
 	vin = valors;
 	vout = valors2;
 	for (m = 2 * porcio; m <= ndades; m *= 2)
 	{
-		#pragma omp parallel for
+		#pragma omp parallel for default(none) firstprivate(m, ndades) shared(vin, vout) schedule(static)
 		for (i = 0; i < ndades; i += m)
 			merge2(&vin[i], m, &vout[i]);
 		vtmp = vin;
@@ -117,9 +114,12 @@ int main(int nargs, char* args[])
   	}
 
 	// Validacio
+//	bool correct = true;  // Transform validation into acummulation	
+
+	#pragma omp parallel for
 	for (i = 1; i < ndades; i++) 
 		assert(vin[i - 1] <= vin[i]);
-
+	#pragma omp parallel for default(none) firstprivate(ndades, vin) reduction(+:sum) schedule(static)
 	for (i = 0; i < ndades; i += 100)
 		sum += vin[i];
 
