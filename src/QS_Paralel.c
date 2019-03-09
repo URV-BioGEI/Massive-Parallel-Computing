@@ -82,6 +82,8 @@ int main(int nargs, char* args[])
 	assert(ndades <= NN);
   
 	parts = atoi(args[2]);
+	omp_set_num_threads(parts);
+
 	if (parts < 2) 
 		assert("Han d'haver dues parts com a minim" == 0);
 
@@ -96,7 +98,10 @@ int main(int nargs, char* args[])
 	// Quicksort a parts
 	#pragma omp parallel for
 	for (i = 0; i < parts; i++)
+	{
 		qs(&valors[i * porcio], porcio);
+		printf("%d", omp_get_num_threads();
+	}
 
 	// Merge en arbre
 	vin = valors;
@@ -118,7 +123,7 @@ int main(int nargs, char* args[])
 	for (i = 0; i < ndades; i += 100)
 		sum += vin[i];
 
-	printf("validacio %lld \n",sum);
+	printf("validacio %lld \n", sum);
 	exit(0);
 }
 
