@@ -140,6 +140,7 @@ int main(int nargs, char* args[])
 	int j;
 	int rand_tmp[3];
 
+	#pragma omp parallel for schedule(static)
 	for (i = 1; i < MAX_INT; i++)
 	{
 		if (!(i % 1000000))
