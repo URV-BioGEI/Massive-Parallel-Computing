@@ -78,7 +78,7 @@ int main(int nargs, char* args[])
 {
 	int ndades, i, m, parts, porcio;
 	int *vin, *vout, *vtmp;
-
+//	unsigned int seed = 1;
 	long long sum = 0;
 
 	assert(nargs == 3);
@@ -95,14 +95,13 @@ int main(int nargs, char* args[])
 	if (ndades % parts) 
 		assert("N ha de ser divisible per parts" == 0);
 
-	//printf("El seguent num es %i que no es igual que 846930886\n", rand());
 	porcio = ndades / parts;
 
-	#pragma omp parallel for ordered default(none) schedule(static) firstprivate(ndades) shared(valors)
 	for (i = 0; i < ndades; i++) 
 		valors[i] = rand();
+		//valors[i] = rand_r(&seed);
 
-	printf("Ya termine con los randoms misenyor");
+	//printf("Ya termine con los randoms misenyor");
 	// Quicksort a parts
 	#pragma omp parallel for default(none) firstprivate(porcio, parts) shared(valors)
 	for (i = 0; i < parts; i++)
