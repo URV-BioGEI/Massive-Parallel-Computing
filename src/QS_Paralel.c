@@ -1,10 +1,11 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <assert.h>
 #include <omp.h>
 
 #define NN 384000000  // 384000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 1,43 GB de dades (com a màxim) carregades a memoria
-#define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
+//#define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
 
 int valors[NN + 1];  
 int valors2[NN + 1];
@@ -103,6 +104,7 @@ int main(int nargs, char* args[])
 	// Merge en arbre
 	vin = valors;
 	vout = valors2;
+	//#pragma omp parallel for ordered 
 	for (m = 2 * porcio; m <= ndades; m *= 2)
 	{
 		#pragma omp parallel for default(none) firstprivate(m, ndades) shared(vin, vout) schedule(static)
@@ -110,15 +112,18 @@ int main(int nargs, char* args[])
 			merge2(&vin[i], m, &vout[i]);
 		vtmp = vin;
 		vin = vout;
-    		vout = vtmp;
+    	vout = vtmp;
   	}
 
 	// Validacio
-//	bool correct = true;  // Transform validation into acummulation	
+	bool correct = true;  // Transform validation into acummulation	
 
-	#pragma omp parallel for
+	#pragma omp parallel for default(none) firstprivate(ndades, vin) schedule(static) reduction(&&:correct)
 	for (i = 1; i < ndades; i++) 
-		assert(vin[i - 1] <= vin[i]);
+		correct &= vin[i - 1] <= vin[i];
+
+	assert(correct);
+
 	#pragma omp parallel for default(none) firstprivate(ndades, vin) reduction(+:sum) schedule(static)
 	for (i = 0; i < ndades; i += 100)
 		sum += vin[i];
