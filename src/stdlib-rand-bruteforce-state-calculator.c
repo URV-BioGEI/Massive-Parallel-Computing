@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <omp.h>
+#include <limits.h>
 
 #define NN 384000000  // 384000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 1,43 GB de dades (com a màxim) carregades a memoria
 #define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
@@ -78,7 +79,6 @@ int main(int nargs, char* args[])
 {
 	int ndades, i, m, parts, porcio;
 	int *vin, *vout, *vtmp;
-//	unsigned int seed = 1;
 	long long sum = 0;
 
 	assert(nargs == 3);
@@ -102,7 +102,8 @@ int main(int nargs, char* args[])
 		//valors[i] = rand_r(&seed);
 
 //////////////////////////
-
+	//unsigned int max_ui = ~0;
+	//max_ui = UINT_MAX;
 	int nums[32][3] = {
 	{1804289383, 846930886, 1681692777},
 	{910375920, 1345461578, 1896181529},
@@ -138,26 +139,37 @@ int main(int nargs, char* args[])
 	{104351210, 1249467362, 853451224}
 	};
 	int j;
+	uint k, uintmax = UINT_MAX;
 	int rand_tmp[3];
-
-	#pragma omp parallel for schedule(static)
-	for (i = 1; i < MAX_INT; i++)
+	FILE *file = NULL;
+	file = fopen("results.txt", "a");
+		
+	//#pragma omp parallel for schedule(static)
+	for (k = 0; k <= uintmax; k++)
 	{
-		if (!(i % 1000000))
-		{
-			printf("\nLlavor %i de %i comprobada. %i llavors restants", i, MAX_INT - 1, MAX_INT - 1 - i);
-		}
-		srand(i);
+		if (!(k % 10000000))
+			printf("\nLlavor %u de %u comprobada. %u llavors restants", k, uintmax, uintmax - k);
+		
+		srand(k);
 		for (j = 0; j < 3; j++)
-		{
 			rand_tmp[j] = rand();
-		}
 		for (j = 0; j < 32; j++)
 		{
 			if (nums[j][0] == rand_tmp[0] && nums[j][1] == rand_tmp[1] && nums[j][2] == rand_tmp[2])
 			{
-				printf("\nla sequencia de nombres random %i, %i, %i corresponent al thread %i tenen la llavor %i", nums[j][0], nums[j][1], nums[j][2], j, i);
-				srand(i);
+				printf("\n%i, %i, %i", rand_tmp[0], rand_tmp[1], rand_tmp[2]);
+				printf("\nla sequencia de nombres random %i, %i, %i corresponent al thread %i tenen la llavor %i", nums[j][0], nums[j][1], nums[j][2], j, k);
+				/*fprintf(file, "\nla sequencia de nombres random %i, %i, %i corresponent al thread %i tenen la llavor %i", nums[j][0], nums[j][1], nums[j][2], j, i);
+				putw(nums[j][0], file);
+				putw(nums[j][1], file);
+				putw(nums[j][2], file);
+				putw(j, file);
+				putw(i, file);
+				fputc('\n', file);
+
+				//fprintf(file, "\nla sequencia de nombres random %i, %i, %i corresponent al thread %i tenen la llavor %i", nums[j][0], nums[j][1], nums[j][2], j, i);
+				getchar();**/
+				srand(k);
 				printf("\nComprovacio: %i, ", rand());
 				printf("%i, ", rand());
 				printf("%i, ", rand());
@@ -165,6 +177,7 @@ int main(int nargs, char* args[])
 		}
 
 	}
+	fclose(file);
 
 	//exit(0);
 ///////////////////////
