@@ -13,15 +13,15 @@ QS_Paralel : QS_Paralel.c
 	$(CC) $(CFLAGS) -o QS_Paralel QS_Paralel.c
 
 run_S : QS_Secuencial
-	./QS_Secuencial 300000000 2
+	./QS_Secuencial 300000000 32
 
 run_P : run
 
 run : QS_Paralel
-	./QS_Paralel 300000000 2
+	./QS_Paralel 300000000 32
 
 time : QS_Paralel
-	time ./QS_Paralel 300000000 2
+	time ./QS_Paralel 300000000 32
 
 time_S : QS_Secuencial
 	time ./QS_Secuencial 300000000 2

@@ -7,6 +7,8 @@
 #define NN 384000000  // 384000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 1,43 GB de dades (com a màxim) carregades a memoria
 //#define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
 
+//(validació 3221142676932982)
+
 int valors[NN + 1];  
 int valors2[NN + 1];
 
@@ -71,10 +73,12 @@ void merge2(int* val, int n, int *vo)
 			vo[i] = val[posj++];
 }
 
+
 int main(int nargs, char* args[])
 {
 	int ndades, i, m, parts, porcio;
 	int *vin, *vout, *vtmp;
+
 	long long sum = 0;
 
 	assert(nargs == 3);
@@ -91,11 +95,14 @@ int main(int nargs, char* args[])
 	if (ndades % parts) 
 		assert("N ha de ser divisible per parts" == 0);
 
+	//printf("El seguent num es %i que no es igual que 846930886\n", rand());
+	porcio = ndades / parts;
+
+	#pragma omp parallel for ordered default(none) schedule(static) firstprivate(ndades) shared(valors)
 	for (i = 0; i < ndades; i++) 
 		valors[i] = rand();
 
-	porcio = ndades / parts;
-
+	printf("Ya termine con los randoms misenyor");
 	// Quicksort a parts
 	#pragma omp parallel for default(none) firstprivate(porcio, parts) shared(valors)
 	for (i = 0; i < parts; i++)
