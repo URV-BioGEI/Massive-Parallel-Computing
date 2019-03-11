@@ -87,7 +87,6 @@ int main(int nargs, char* args[])
 	assert(ndades <= NN);
   
 	parts = atoi(args[2]);
-	omp_set_num_threads(parts);
 
 	if (parts < 2) 
 		assert("Han d'haver dues parts com a minim" == 0);
@@ -102,8 +101,7 @@ int main(int nargs, char* args[])
 		//valors[i] = rand_r(&seed);
 
 //////////////////////////
-	//unsigned int max_ui = ~0;
-	//max_ui = UINT_MAX;
+
 	int nums[32][3] = {
 	{1804289383, 846930886, 1681692777},
 	{910375920, 1345461578, 1896181529},
@@ -138,13 +136,9 @@ int main(int nargs, char* args[])
 	{1929690634, 2115227139, 731032562},
 	{104351210, 1249467362, 853451224}
 	};
-	int j;
+	int j, rand_tmp[3];
 	uint k, uintmax = UINT_MAX;
-	int rand_tmp[3];
-	FILE *file = NULL;
-	file = fopen("results.txt", "a");
 		
-	//#pragma omp parallel for schedule(static)
 	for (k = 0; k <= uintmax; k++)
 	{
 		if (!(k % 10000000))
@@ -157,18 +151,7 @@ int main(int nargs, char* args[])
 		{
 			if (nums[j][0] == rand_tmp[0] && nums[j][1] == rand_tmp[1] && nums[j][2] == rand_tmp[2])
 			{
-				printf("\n%i, %i, %i", rand_tmp[0], rand_tmp[1], rand_tmp[2]);
 				printf("\nla sequencia de nombres random %i, %i, %i corresponent al thread %i tenen la llavor %i", nums[j][0], nums[j][1], nums[j][2], j, k);
-				/*fprintf(file, "\nla sequencia de nombres random %i, %i, %i corresponent al thread %i tenen la llavor %i", nums[j][0], nums[j][1], nums[j][2], j, i);
-				putw(nums[j][0], file);
-				putw(nums[j][1], file);
-				putw(nums[j][2], file);
-				putw(j, file);
-				putw(i, file);
-				fputc('\n', file);
-
-				//fprintf(file, "\nla sequencia de nombres random %i, %i, %i corresponent al thread %i tenen la llavor %i", nums[j][0], nums[j][1], nums[j][2], j, i);
-				getchar();**/
 				srand(k);
 				printf("\nComprovacio: %i, ", rand());
 				printf("%i, ", rand());
@@ -177,7 +160,7 @@ int main(int nargs, char* args[])
 		}
 
 	}
-	fclose(file);
+
 
 	//exit(0);
 ///////////////////////
