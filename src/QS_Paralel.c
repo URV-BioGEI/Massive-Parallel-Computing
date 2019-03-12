@@ -76,14 +76,11 @@ void merge2(int* val, int n, int *vo)
 
 int main(int nargs, char* args[])
 {			
-	static int ndades,m;
-	int i, parts, porcio;
+	int i, parts, porcio, ndades, m;
 	int *vin, *vout, *vtmp;
 	long long sum = 0;
 
 	assert(nargs == 3);
- 	#pragma omp threadprivate (ndades,m)
-
  
 	ndades = atoi(args[1]);
 	assert(ndades <= NN);
@@ -99,16 +96,15 @@ int main(int nargs, char* args[])
 		assert("N ha de ser divisible per parts" == 0);
 
 	porcio = ndades / parts;
-	for (i=0; i<ndades; i++)
-		valors[i]=rand();
+	for (i = 0; i < ndades; i++)
+		valors[i] = rand();
 	
 	// Quicksort a parts
 	#pragma omp parallel default(none) firstprivate(porcio, parts)  shared(valors)
 	{		
-	#pragma omp for
-	for(i=0; i<parts; i++){
-	qs(&valors[i * porcio], porcio);		
-	}
+		#pragma omp for
+		for(i = 0; i < parts; i++)
+			qs(&valors[i * porcio], porcio);		
 	}
 	// Merge en arbre
 	vin = valors;
@@ -116,26 +112,26 @@ int main(int nargs, char* args[])
 
 	for (m = 2 * porcio; m <= ndades; m *= 2)
 	{	
-		#pragma omp parallel for default(none) copyin(ndades,m) shared(vin,vout) schedule(static)
+		#pragma omp parallel for default(none) firstprivate(ndades,m) shared(vin,vout) schedule(static)
 		for (i = 0; i < ndades; i += m)
 		{
 			merge2(&vin[i], m, &vout[i]);
 		}
 		vtmp = vin;
 		vin = vout;
-    		vout = vtmp;
+    	vout = vtmp;
 	}
 	
 	// Validacio
 	bool correct = true;  // Transform validation into acummulation	
-	
 	#pragma omp parallel for default(none) firstprivate(vin) copyin(ndades) reduction(&&:correct) schedule(static) 	
 	for (i = 1; i <  ndades; i++) 
 		correct &= vin[i - 1] <= vin[i];
 	assert(correct);
+
 	#pragma omp parallel for default(none) firstprivate(vin) copyin(ndades) reduction(+:sum) schedule(static)
-	for(i=0;i<ndades;i+=100)
-		sum+=vin[i];
+	for(i = 0; i < ndades; i += 100)
+		sum += vin[i];
 	
 	printf("validacio %lld \n", sum);
 	exit(0);
