@@ -45,7 +45,7 @@ void qs(int *val, int ne)
 	}
 	val[i - 1] = pivot;  // Un cop els dos índexos es creuen (i > f, i - 1 = f) coloquem el pivot a la posició i - 1 per a que els dos 
 	// sub vectors es trobin ordenats
- 
+
  	// En principi aquests dos ifs s'activen i porten dues trucades recursives que reordenen els dos subvectors
  	// Si no es aixi, vol dir que el pivot escollit era major o menor que la resta d'elements en l'array (es el pitjor cas al escollir un pivot)
 	// o bé que el vector es molt curt 
@@ -64,7 +64,7 @@ void merge2(int* val, int n, int *vo)
 
 	posi = 0;  // posicio inicial en el vector esquerra
 	posj = (n / 2);  // posicio inicial en el vector dret //? redundant parenthesis
- 
+
 	for (i = 0; i < n; i++)  // recorrem el conjunt dels dos vectors
 		// si hem acabat amb el vector j o no hem acabat el vector i & el valor al vector i es menor o igual que el valor al vector j 
 		if (((posi < n/2) && (val[posi] <= val[posj])) || (posj >= n)) 
@@ -88,7 +88,6 @@ int main(int nargs, char* args[])
 	parts = atoi(args[2]);
 	omp_set_num_threads(parts);
 	
-
 	if (parts < 2) 
 		assert("Han d'haver dues parts com a minim" == 0);
 
