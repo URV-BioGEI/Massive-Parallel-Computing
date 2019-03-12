@@ -1,7 +1,7 @@
 
 #!/bin/bash
 rm results.txt
-cores=('2' '4' '8' '16' '32')
+cores=('8' '16' '32')
 binari=('Validation_ForNoWait');
 for name in ${binari[@]}; do
 
@@ -10,11 +10,11 @@ for name in ${binari[@]}; do
 	for core in ${cores[@]}; do
 		echo "$core" >> results.txt
 		i="0"
-		while [ $i -lt 5 ]
+		while [ $i -lt 3 ]
 		do
 			echo "$i"
-			echo "srun -p gat time ./$name 300000000 $core 2>&1"
-			times=$(srun -p gat time ./$name 300000000 $core 2>&1)
+			echo "srun -p roquer time ./$name 300000000 $core 2>&1"
+			times=$(srun -p roquer time ./$name 300000000 $core 2>&1)
 			result=$(echo "$times" | grep "elapsed" | cut -d ' ' -f3 | cut -c 3-7)
 			echo "result is $result"
 			echo "$times"
