@@ -112,7 +112,7 @@ int main(int nargs, char* args[])
 
 	for (m = 2 * porcio; m <= ndades; m *= 2)
 	{	
-		#pragma omp parallel for default(none) firstprivate(ndades,m) shared(vin,vout) schedule(static)
+		#pragma omp parallel for default(none) firstprivate(ndades, m) shared(vin,vout) schedule(static)
 		for (i = 0; i < ndades; i += m)
 		{
 			merge2(&vin[i], m, &vout[i]);
@@ -124,12 +124,12 @@ int main(int nargs, char* args[])
 	
 	// Validacio
 	bool correct = true;  // Transform validation into acummulation	
-	#pragma omp parallel for default(none) firstprivate(vin) copyin(ndades) reduction(&&:correct) schedule(static) 	
+	#pragma omp parallel for default(none) firstprivate(vin, ndades) reduction(&&:correct) schedule(static) 	
 	for (i = 1; i <  ndades; i++) 
 		correct &= vin[i - 1] <= vin[i];
 	assert(correct);
 
-	#pragma omp parallel for default(none) firstprivate(vin) copyin(ndades) reduction(+:sum) schedule(static)
+	#pragma omp parallel for default(none) firstprivate(vin, ndades) reduction(+:sum) schedule(static)
 	for(i = 0; i < ndades; i += 100)
 		sum += vin[i];
 	
