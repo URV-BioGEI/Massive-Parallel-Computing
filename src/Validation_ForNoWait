@@ -79,6 +79,7 @@ int main(int nargs, char* args[])
 	static int ndades,m;
 	int i, parts, porcio;
 	int *vin, *vout, *vtmp;
+//	unsigned int seed = 1;
 	long long sum = 0;
 
 	assert(nargs == 3);
@@ -91,7 +92,8 @@ int main(int nargs, char* args[])
 	parts = atoi(args[2]);
 	omp_set_num_threads(parts);
 	
-
+	
+	
 	if (parts < 2) 
 		assert("Han d'haver dues parts com a minim" == 0);
 
@@ -100,9 +102,9 @@ int main(int nargs, char* args[])
 
 	porcio = ndades / parts;
 	for (i=0; i<ndades; i++)
-		valors[i]=rand();
+	valors[i]=rand();
 	
-	// Quicksort a parts
+		// Quicksort a parts
 	#pragma omp parallel default(none) firstprivate(porcio, parts)  shared(valors)
 	{		
 	#pragma omp for
@@ -124,20 +126,30 @@ int main(int nargs, char* args[])
 		vtmp = vin;
 		vin = vout;
     		vout = vtmp;
+  		
 	}
 	
 	// Validacio
 	bool correct = true;  // Transform validation into acummulation	
 	
-	#pragma omp parallel for default(none) firstprivate(vin) copyin(ndades) reduction(&&:correct) schedule(static) 	
+	#pragma omp parallel default(none) firstprivate(porcio, vin) copyin(ndades) reduction(&&:correct) reduction(+:sum) 
+	{
+	#pragma omp for schedule(static ) nowait	
 	for (i = 1; i <  ndades; i++) 
+	{	
 		correct &= vin[i - 1] <= vin[i];
+	}
+	#pragma omp for schedule(static) 
+	for (i = 0; i < ndades; i += 100)
+		sum += vin[i];
+	}
+
 	assert(correct);
-	#pragma omp parallel for default(none) firstprivate(vin) copyin(ndades) reduction(+:sum) schedule(static)
-	for(i=0;i<ndades;i+=100)
-		sum+=vin[i];
-	
 	printf("validacio %lld \n", sum);
+	
+	
 	exit(0);
+	
+	
 }
 
