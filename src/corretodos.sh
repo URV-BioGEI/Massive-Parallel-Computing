@@ -2,7 +2,7 @@
 #!/bin/bash
 rm results.txt
 cores=('2' '4' '8' '16' '32')
-binari=('QS_Paralel' 'QS_ParalelNoWait' 'Validation_For');
+binari=('Validation_ForNoWait');
 for name in ${binari[@]}; do
 
 	echo "$name" >> results.txt
