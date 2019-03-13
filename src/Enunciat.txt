@@ -1,0 +1,14 @@
+Càlcul de tots els sudokus a partir d'un taulell inicialitzat.
+
+Temps d'execució seqüencial amb les opcions "-O3":
+
+a Gat -> 90.58 segons, 
+
+a Roquer -> 32.85 segons
+
+a Teen -> 41.70 segons, 
+
+Es programarà amb OpenMP
+Speedup mínim  a GAT: 3
+La versió paral·lela ha de donar el mateix resultat que la seqüencial. (validació 13889280)
+Cal executar el codi variant el nombre de threads des de 2 fins a 32 threads

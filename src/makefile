@@ -1,35 +1,20 @@
 CC = gcc
 CFLAGS = -O3 -Wall -fopenmp
 
-all : QS_Secuencial QS_Secuencial_Refactored QS_Paralel
+all : sudoku_refactored sudoku_secuencial
 
-QS_Secuencial : QS_Secuencial.c
-	$(CC) $(CFLAGS) -o QS_Secuencial QS_Secuencial.c
+sudoku_refactored : sudoku_refactored.c
+	$(CC) $(CFLAGS) -o sudoku_refactored sudoku_refactored.c
 
-QS_Secuencial_Refactored : QS_Secuencial_Refactored.c
-	$(CC) $(CFLAGS) -o QS_Secuencial_Refactored QS_Secuencial_Refactored.c
+sudoku_secuencial : sudoku_secuencial.c
+	$(CC) $(CFLAGS) -o sudoku_secuencial sudoku_secuencial.c
 
-QS_Paralel : QS_Paralel.c
-	$(CC) $(CFLAGS) -o QS_Paralel QS_Paralel.c
+run : sudoku_refactored
+	time ./sudoku_refactored
 
-run_S : QS_Secuencial
-	./QS_Secuencial 300000000 32
-
-run_P : run
-
-run : QS_Paralel
-	./QS_Paralel 300000000 32
-
-time : QS_Paralel
-	time ./QS_Paralel 300000000 32
-
-time_S : QS_Secuencial
-	time ./QS_Secuencial 300000000 2
-
-time_P : time
-	
+runSecuencial : sudoku_secuencial
+	time ./sudoku_secuencial
 
 .PHONY : clean
 clean :
-	-rm QS_Secuencial QS_Secuencial_Refactored QS_Paralel
-
+	-rm sudoku_secuencial sudoku_refactored
