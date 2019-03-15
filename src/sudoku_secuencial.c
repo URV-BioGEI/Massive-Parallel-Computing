@@ -54,7 +54,9 @@ long int s=0;
    for (k=1;k<10;k++)
      if (puc_posar(i,j,k)) 
       {
-       taula[i][j]= k; 
+        printf("%d, %d, %d\n", i,j,k);
+        fflush(stdout);
+	taula[i][j]= k; 
 	 if (j<8) s += recorrer(i,j+1);
 	 else if (i<8) s += recorrer(i+1,0);
 	 else s++;
