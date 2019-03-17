@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <assert.h>
+#include <omp.h>
+
 
 #define CERT 1
 #define FALS 0
@@ -20,6 +22,7 @@ int taula[9][9] = \
          0,0,0, 0,0,0,  0,0,0,  \
          0,0,0, 0,0,0,  0,0,0};
 
+#pragma omp threadprivate(taula)
 
 int puc_posar(int x, int y, int z)
 {
@@ -65,12 +68,49 @@ return(s);
 }
 
 ////////////////////////////////////////////////////////////////////
-int main()
+int main(int nargs, char* args[])
 {
-int i,j,k;
-long int nsol;
+int i,j,v, d = 0, depth = 1;
+long int nsol = 0;
 
-nsol = recorrer(0,0);
+int parts_minimes = atoi(args[1]);
+omp_set_num_threads(parts_minimes);
+
+for (i = 0; i < 9; i++)
+{
+  for (j = 0; j < 9 && d < depth; j++)
+  {
+    if (!taula[i][j])
+    {
+      //push
+      d++;
+      #pragma omp parallel for reduction(+:nsol) schedule(dynamic) copyin(taula)
+      for (v = 0; v < 9; v++)
+      {
+        if (puc_posar(i, j, v))
+        {
+          taula[i][j] = v;
+          nsol += recorrer(i, j);
+        }
+        //taula[i][j] = v
+      }
+      //pop
+    }
+  }
+}
+
+
+/*
+taula[3][4] = 3;
+nsol = recorrer(0, 0);
+taula[3][4] = 4;
+nsol += recorrer(0, 0);
+taula[3][4] = 6;
+nsol += recorrer(0, 0);
+
+printf("numero solucions idea: %ld\n",nsol);
+taula[3][4] = 0;
+nsol = recorrer(0,0); */
 printf("numero solucions : %ld\n",nsol);
 exit(0);
 }
