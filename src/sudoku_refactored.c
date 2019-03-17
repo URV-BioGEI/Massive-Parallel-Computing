@@ -83,6 +83,7 @@ int pos_probades[depth][2]; // array of modified positions
 int num_pos_probades = 0;
 int num_solucions_parcials = 0;
 
+// Algorisme de cerca de posicions buides, parametritzat amb depth. Es van apilant a pos_probades
 for (i = 0; i < 9; i++)
 {
   for (j = 0; j < 9 && num_pos_probades < depth; j++)
@@ -96,17 +97,21 @@ for (i = 0; i < 9; i++)
   }
 }
 
-for (i = 0; i < 9; i++)
+// Algorisme de desplegament. Busca les possibles semi-solucions amb les tres posicions escollides a l'algorisme anterior
+// i les apila a solucions_parcials, a on:
+//  * solucions_parcials[Nº solucio][posicio] correspon al valor que cal posar a taula en la posicio x:pos_probades[posicio][0] y:pos_probades[posicio][1] per a probar la solució
+//  
+for (i = 1; i < 10; i++)
 {
   if (puc_posar(pos_probades[0][0], pos_probades[0][1], i))
   {
     taula[pos_probades[0][0]][pos_probades[0][1]] = i;
-    for (j = 0; j < 9; j++)
+    for (j = 1; j < 10; j++)
     {
       if (puc_posar(pos_probades[1][0], pos_probades[1][1], j))
       {
         taula[pos_probades[1][0]][pos_probades[1][1]] = j;
-        for (k = 0; k < 9; k++)
+        for (k = 1; k < 10; k++)
         {
           if (puc_posar(pos_probades[2][0], pos_probades[2][1], k))
           {
