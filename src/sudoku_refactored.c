@@ -67,50 +67,80 @@ long int s=0;
 return(s);
 }
 
+
 ////////////////////////////////////////////////////////////////////
 int main(int nargs, char* args[])
 {
-int i,j,v, d = 0, depth = 1;
+int i,j,k;
 long int nsol = 0;
 
-int parts_minimes = atoi(args[1]);
-omp_set_num_threads(parts_minimes);
+omp_set_num_threads(atoi(args[1]));
+int depth = atoi(args[2]);
+
+int solucions_parcials[100][depth];  // array of partial solutions.
+int pos_probades[depth][2]; // array of modified positions
+
+int num_pos_probades = 0;
+int num_solucions_parcials = 0;
 
 for (i = 0; i < 9; i++)
 {
-  for (j = 0; j < 9 && d < depth; j++)
+  for (j = 0; j < 9 && num_pos_probades < depth; j++)
   {
     if (!taula[i][j])
     {
-      //push
-      d++;
-      #pragma omp parallel for reduction(+:nsol) schedule(dynamic) copyin(taula)
-      for (v = 0; v < 9; v++)
-      {
-        if (puc_posar(i, j, v))
-        {
-          taula[i][j] = v;
-          nsol += recorrer(i, j);
-        }
-        //taula[i][j] = v
-      }
-      //pop
+      pos_probades[num_pos_probades][0] = i;
+      pos_probades[num_pos_probades][1] = j;
+      num_pos_probades++;
     }
   }
 }
 
+for (i = 0; i < 9; i++)
+{
+  if (puc_posar(pos_probades[0][0], pos_probades[0][1], i))
+  {
+    taula[pos_probades[0][0]][pos_probades[0][1]] = i;
+    for (j = 0; j < 9; j++)
+    {
+      if (puc_posar(pos_probades[1][0], pos_probades[1][1], j))
+      {
+        taula[pos_probades[1][0]][pos_probades[1][1]] = j;
+        for (k = 0; k < 9; k++)
+        {
+          if (puc_posar(pos_probades[2][0], pos_probades[2][1], k))
+          {
+            solucions_parcials[num_solucions_parcials][0] = i;
+            solucions_parcials[num_solucions_parcials][1] = j;
+            solucions_parcials[num_solucions_parcials][2] = k;
+            num_solucions_parcials++;
+          }
+        }
+      }
+      taula[pos_probades[1][0]][pos_probades[1][1]] = 0;
+    }
+  }
+  taula[pos_probades[0][0]][pos_probades[0][1]] = 0;
+}
 
-/*
-taula[3][4] = 3;
-nsol = recorrer(0, 0);
-taula[3][4] = 4;
-nsol += recorrer(0, 0);
-taula[3][4] = 6;
-nsol += recorrer(0, 0);
+printf("Numero de solucions prcials trobades: %d", num_solucions_parcials);
+printf("\nPos1: (%d, %d) \nPos2: (%d, %d) \nPos3: (%d, %d)", pos_probades[0][0], pos_probades[0][1], pos_probades[1][0], pos_probades[1][1], pos_probades[2][0], pos_probades[2][1]);
+for (i = 0; i < num_solucions_parcials; i++)
+{
+  printf("\nSol. %d: ", i);
+  for (j = 0; j < 3; j++)
+    printf("%d, ", solucions_parcials[i][j]);
+}
 
-printf("numero solucions idea: %ld\n",nsol);
-taula[3][4] = 0;
-nsol = recorrer(0,0); */
-printf("numero solucions : %ld\n",nsol);
+#pragma omp parallel for default(none) schedule(dynamic) shared(pos_probades, solucions_parcials, num_solucions_parcials) copyin(taula) reduction(+:nsol)
+for (i = 0; i < num_solucions_parcials; i++)
+{
+  taula[pos_probades[0][0]] [pos_probades[0][1]] = solucions_parcials[i][0];
+  taula[pos_probades[1][0]] [pos_probades[1][1]] = solucions_parcials[i][1];
+  taula[pos_probades[2][0]] [pos_probades[2][1]] = solucions_parcials[i][2];
+  nsol += recorrer(0, 0);
+}
+
+printf("\nnumero solucions : %ld\n",nsol);
 exit(0);
 }
