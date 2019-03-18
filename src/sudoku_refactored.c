@@ -83,47 +83,44 @@ int pos_probades[depth][2]; // array of modified positions
 int num_pos_probades = 0;
 int num_solucions_parcials = 0;
 
-for (i = 0; i < 9; i++)
+for (i = 0; i < 81 && num_pos_probades<depth; i++)
 {
-  for (j = 0; j < 9 && num_pos_probades < depth; j++)
-  {
-    if (!taula[i][j])
+    if (!taula[i/9][i%9])
     {
-      pos_probades[num_pos_probades][0] = i;
-      pos_probades[num_pos_probades][1] = j;
+      pos_probades[num_pos_probades][0] = i/9;
+      pos_probades[num_pos_probades][1] = i%9;
       num_pos_probades++;
-    }
-  }
+   }
 }
-
-for (i = 0; i < 9; i++)
+#pragma omp parallel for default(none) schedule(dynamic) shared(pos_probades) copyin(taula) reduction(+:nsol)
+for (i = 0; i < 729; i++)
 {
-  if (puc_posar(pos_probades[0][0], pos_probades[0][1], i))
+  if (puc_posar(pos_probades[0][0], pos_probades[0][1], (i/81)+1))
   {
-    taula[pos_probades[0][0]][pos_probades[0][1]] = i;
-    for (j = 0; j < 9; j++)
-    {
-      if (puc_posar(pos_probades[1][0], pos_probades[1][1], j))
+    taula[pos_probades[0][0]][pos_probades[0][1]] = (i/81)+1;
+    if (puc_posar(pos_probades[1][0], pos_probades[1][1], ((i/9)%9)+1))
       {
-        taula[pos_probades[1][0]][pos_probades[1][1]] = j;
-        for (k = 0; k < 9; k++)
-        {
-          if (puc_posar(pos_probades[2][0], pos_probades[2][1], k))
+        taula[pos_probades[1][0]][pos_probades[1][1]] = ((i/9)%9)+1;
+        
+          if (puc_posar(pos_probades[2][0], pos_probades[2][1], (i%9)+1))
           {
-            solucions_parcials[num_solucions_parcials][0] = i;
-            solucions_parcials[num_solucions_parcials][1] = j;
-            solucions_parcials[num_solucions_parcials][2] = k;
-            num_solucions_parcials++;
+            /*solucions_parcials[num_solucions_parcials][0] =(i/81)+1;
+            solucions_parcials[num_solucions_parcials][1] = ((i/9)%9)+1;
+            solucions_parcials[num_solucions_parcials][2] = (i%9)+1;
+            num_solucions_parcials++;*/
+            taula[pos_probades[2][0]][pos_probades[2][1]] = (i%9)+1;
+            nsol+=recorrer(0,0);
+            taula[pos_probades[2][0]][pos_probades[2][1]] = 0; 
           }
-        }
+        
       }
       taula[pos_probades[1][0]][pos_probades[1][1]] = 0;
-    }
+    
   }
   taula[pos_probades[0][0]][pos_probades[0][1]] = 0;
 }
 
-printf("Numero de solucions prcials trobades: %d", num_solucions_parcials);
+/*printf("Numero de solucions prcials trobades: %d", num_solucions_parcials);
 printf("\nPos1: (%d, %d) \nPos2: (%d, %d) \nPos3: (%d, %d)", pos_probades[0][0], pos_probades[0][1], pos_probades[1][0], pos_probades[1][1], pos_probades[2][0], pos_probades[2][1]);
 for (i = 0; i < num_solucions_parcials; i++)
 {
@@ -139,7 +136,7 @@ for (i = 0; i < num_solucions_parcials; i++)
   taula[pos_probades[1][0]] [pos_probades[1][1]] = solucions_parcials[i][1];
   taula[pos_probades[2][0]] [pos_probades[2][1]] = solucions_parcials[i][2];
   nsol += recorrer(0, 0);
-}
+}*/
 
 printf("\nnumero solucions : %ld\n",nsol);
 exit(0);
