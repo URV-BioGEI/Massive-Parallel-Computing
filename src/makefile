@@ -1,26 +1,20 @@
 CC = gcc
 CFLAGS = -O3 -Wall -fopenmp
 
-all : sudoku_refactored sudoku_secuencial sudoku_paralel sudoku_refactored3
+all : sudoku_secuencial P2.1_CPM_MarineRuiz
 
-sudoku_refactored : sudoku_refactored.c
-	$(CC) $(CFLAGS) -o sudoku_refactored sudoku_refactored.c
-
-sudoku_refactored3 : sudoku_refactored3.c
-	$(CC) $(CFLAGS) -o sudoku_refactored3 sudoku_refactored3.c
+P2.1_CPM_MarineRuiz : P2.1_CPM_MarineRuiz.c
+	$(CC) $(CFLAGS) -o P2.1_CPM_MarineRuiz P2.1_CPM_MarineRuiz.c
 
 sudoku_secuencial : sudoku_secuencial.c
 	$(CC) $(CFLAGS) -o sudoku_secuencial sudoku_secuencial.c
 
-sudoku_paralel : sudoku_paralel.c
-	$(CC) $(CFLAGS) -o sudoku_paralel sudoku_paralel.c
-
-run : sudoku_refactored
-	time ./sudoku_refactored
+run : P2.1_CPM_MarineRuiz
+	time ./P2.1_CPM_MarineRuiz
 
 runSecuencial : sudoku_secuencial
 	time ./sudoku_secuencial
 
 .PHONY : clean
 clean :
-	-rm sudoku_secuencial sudoku_refactored sudoku_paralel
+	rm sudoku_secuencial P2.1_CPM_MarineRuiz

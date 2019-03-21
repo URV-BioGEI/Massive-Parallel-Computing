@@ -1,8 +1,9 @@
 #!/bin/bash
 
 cores=('4' '8' '16' '32')
-binaries=('sudoku_refactored' 'sudoku_refactored3');
-samples='5'
+binaries=('P2.1_CPM_MarineRuiz');
+servers=("gat" "roquer" "teen")
+samples='10'
 
 rm results.txt
 for binary in ${binaries[@]}; do
