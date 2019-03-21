@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <assert.h>
+#include <omp.h>
 
 #define CERT 1
 #define FALS 0
@@ -20,7 +21,7 @@ int taula[9][9] = \
          0,0,0, 0,0,0,  0,0,0,  \
          0,0,0, 0,0,0,  0,0,0};
 
-
+//#pragma omp threadprivate(taula)
 int puc_posar(int x, int y, int z)
 {
 int i,j,pi,pj;

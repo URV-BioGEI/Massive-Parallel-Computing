@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cores=('8' '16' '32')
-binaries=('Validation_ForNoWait');
+cores=('4' '8' '16' '32')
+binaries=('sudoku_refactored' 'sudoku_refactored3');
 samples='5'
 
 rm results.txt
@@ -10,8 +10,8 @@ for binary in ${binaries[@]}; do
 	for core in ${cores[@]}; do
 		echo "$core" | tee -a results.txt
 		for ((i=0;i<samples;i++)); do
-			times=$(srun -p roquer time ./$name 300000000 $core 2>&1 | grep "elapsed" | cut -d ' ' -f3 | cut -c 3-7)
-			echo "$result" | tee -a results.txt	
+			times=$(srun -p gat time ./$binary $core 4 2>&1 )
+			echo "$times" | tee -a results.txt	
 		done
 	done
 done
