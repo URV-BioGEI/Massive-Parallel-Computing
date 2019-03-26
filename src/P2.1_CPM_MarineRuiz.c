@@ -80,7 +80,7 @@ int main(int nargs, char* args[])
 int i;
 long int nsol = 0;
 
-omp_set_num_threads(8); // hardcoded
+omp_set_num_threads(atoi(args[1])); // hardcoded
 
 int pos_probades[4][2]; // array of modified positions
 
