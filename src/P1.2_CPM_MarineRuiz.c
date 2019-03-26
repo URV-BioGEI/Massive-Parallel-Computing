@@ -23,7 +23,6 @@ int taula[9][9] = \
          0,0,0, 0,0,0,  0,0,0};
 
 
-//#pragma omp threadprivate(taula)
 
 
 int puc_posar(int x, int y, int z, int tabla[9][9])
@@ -98,7 +97,7 @@ for (i = 0; i < 81 && num_pos_probades<4; i++)
 }
 int tabla[9][9];
 memcpy(tabla,taula,sizeof(tabla));
-#pragma omp parallel for default(none) schedule(dynamic) shared(pos_probades,stdout) firstprivate(tabla) reduction(+:nsol)
+#pragma omp parallel for default(none) schedule(dynamic) shared(pos_probades) firstprivate(tabla) reduction(+:nsol)
 for (i = 0; i < 6561; i++)
 {
  if (puc_posar(pos_probades[0][0], pos_probades[0][1], (i/729)+1,tabla))
