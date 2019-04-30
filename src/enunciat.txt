@@ -1,0 +1,10 @@
+El codi és el mateix que la practica P1.1. 
+Ara el temps seqüencial és de 74,4 segons a les màquines POP.
+
+Es programarà amb MPI
+L'execució es farà per els nombre de processos que indica la taula (11 execucions).
+S'ha de respectar les dades que surten per la sortida estàndard i en la versió paral·lela ha de donar el mateix resultat.
+El vector ordenat resultant ha de quedar emmagatzemat sencer al procés 0.
+L'speedup en qualsevol configuració ha de ser superior a 1.5
+L'speedup harmònic ha de ser superior a 3.0
+A les maquines Odroid son execucions opcionals. Cal canviar la mida N a 250Milions (del codi font).

@@ -1,22 +1,27 @@
+
 #!/bin/bash
-
-cores=('smoketest')
-binaries=('P1.2_CPM_MarineRuiz');
-servers=("gat" "roquer" "teen")
-samples='10'
-
 rm results.txt
-for binary in ${binaries[@]}; do
-	echo "$binary" | tee -a results.txt
-	for server in ${servers[@]}; do
-		echo "$server" | tee -a results.txt
-		for core in ${cores[@]}; do
-			echo "$core" | tee -a results.txt
-			for ((i=0;i<samples;i++)); do
-				times=$(srun -p $server time ./$binary 2>&1 | grep "elapsed" | cut -d ' ' -f3 | cut -c 3-7)
-				echo "$times" | tee -a results.txt	
-			done
+cores=('8' '16' '32')
+binari=('Validation_ForNoWait');
+for name in ${binari[@]}; do
+
+	echo "$name" >> results.txt
+	echo "$name"
+	for core in ${cores[@]}; do
+		echo "$core" >> results.txt
+		i="0"
+		while [ $i -lt 3 ]
+		do
+			echo "$i"
+			echo "srun -p roquer time ./$name 300000000 $core 2>&1"
+			times=$(srun -p roquer time ./$name 300000000 $core 2>&1)
+			result=$(echo "$times" | grep "elapsed" | cut -d ' ' -f3 | cut -c 3-7)
+			echo "result is $result"
+			echo "$times"
+			echo "$result" >> results.txt	
+			i=$[$i+1]
 		done
 	done
 done
+
 

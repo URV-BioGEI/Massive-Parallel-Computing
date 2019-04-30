@@ -1,20 +1,35 @@
 CC = gcc
 CFLAGS = -O3 -Wall -fopenmp
 
-all : sudoku_secuencial P1.2_CPM_MarineRuiz
+all : QS_Secuencial QS_Secuencial_Refactored QS_Paralel
 
-P1.2_CPM_MarineRuiz : P1.2_CPM_MarineRuiz.c
-	$(CC) $(CFLAGS) -o P1.2_CPM_MarineRuiz P1.2_CPM_MarineRuiz.c
+QS_Secuencial : QS_Secuencial.c
+	$(CC) $(CFLAGS) -o QS_Secuencial QS_Secuencial.c
 
-sudoku_secuencial : sudoku_secuencial.c
-	$(CC) $(CFLAGS) -o sudoku_secuencial sudoku_secuencial.c
+QS_Secuencial_Refactored : QS_Secuencial_Refactored.c
+	$(CC) $(CFLAGS) -o QS_Secuencial_Refactored QS_Secuencial_Refactored.c
 
-run : P2.1_CPM_MarineRuiz
-	time ./P1.2_CPM_MarineRuiz
+QS_Paralel : QS_Paralel.c
+	$(CC) $(CFLAGS) -o QS_Paralel QS_Paralel.c
 
-runSecuencial : sudoku_secuencial
-	time ./sudoku_secuencial
+run_S : QS_Secuencial
+	./QS_Secuencial 300000000 32
+
+run_P : run
+
+run : QS_Paralel
+	./QS_Paralel 300000000 32
+
+time : QS_Paralel
+	time ./QS_Paralel 300000000 32
+
+time_S : QS_Secuencial
+	time ./QS_Secuencial 300000000 2
+
+time_P : time
+	
 
 .PHONY : clean
 clean :
-	rm sudoku_secuencial P2.1_CPM_MarineRuiz
+	-rm QS_Secuencial QS_Secuencial_Refactored QS_Paralel
+
