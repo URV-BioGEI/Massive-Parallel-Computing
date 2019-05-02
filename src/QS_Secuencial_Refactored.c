@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 
-#define NN 250000  // 250000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 0,93 GB de dades (com a màxim) carregades a memoria
+#define NN 1100  // 250000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 0,93 GB de dades (com a màxim) carregades a memoria
 #define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
 
 int valors[NN + 1];  
@@ -82,7 +82,7 @@ int merge2_different(int* in1, int n_in1, int* in2, int n_in2, int *vo)
 			vo[i] = in1[posi++];
 		else 
 			vo[i] = in2[posj++];
-	return i;
+	return n_in2 + n_in1;
 }
 
 int main(int nargs,char* args[])
@@ -168,7 +168,7 @@ int main(int nargs,char* args[])
 	vtmp = valors3;
 	int num_received_values;
 	int counter = 0;
-	for (i = 2; i <= ideal_num_processos; i *= 2)
+	for (i = 2; i < ideal_num_processos; i *= 2)
 	{
 		if (id % i > 0)  // envies
 		{
@@ -176,7 +176,8 @@ int main(int nargs,char* args[])
 			proces_desti = id / i * i;
 			printf("\nProces %d en iteracio %d envia %d dades a %d", id, counter, num_elements[id], proces_desti);
 			printf("\n");
-			MPI_Send (vout, num_elements[id], MPI_INT, proces_desti, 0, MPI_COMM_WORLD);
+			MPI_Ssend (vout, num_elements[id], MPI_INT, proces_desti, 0, MPI_COMM_WORLD);
+			printf("\nProces %d en iteracio %d espera la barrera", id, counter);
 			MPI_Barrier(MPI_COMM_WORLD);
 			//return 0;
 			// fin de hebra
@@ -188,10 +189,14 @@ int main(int nargs,char* args[])
 			if (proces_font != id && proces_font < parts)
 			{
 				printf("\nProces %d en iteracio %d INTENTA rebre dades de %d", id, counter, proces_font);
-				MPI_Recv(vin, NN, MPI_INT, proces_font, 0, MPI_COMM_WORLD, &estat);
+				MPI_Recv(vin, NN, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &estat);
+				if (id == 0) printf ("\nProces 0 fa la recepcio a iteracio %i", counter);
 				MPI_Get_count(&estat, MPI_INT, &num_received_values);
-				printf("\nProces %d en iteracio %d rep %d dades de %d", id, i / 2, num_received_values, proces_font);
+				
+				printf ("\nProces %i llegeix %i numeros i te %i a iteracio %i", id, num_received_values, num_elements[id], counter);
+
 				num_elements[id] = merge2_different(vout, num_elements[id], vin, num_received_values, vtmp);
+				printf ("\nProces %i a iteracio % i retorna %i", id, counter, num_elements[id]);
 				vin = vtmp;
 				vtmp = vout;
 				vout = vin;
@@ -201,7 +206,7 @@ int main(int nargs,char* args[])
   	}
 
 	//if (id == 5) for (i = 0; i < num_elements[id]; i++) printf("%d ", valors2[i]);
-
+  	printf("\ndw");
     MPI_Finalize();
 
 	// Validacio
