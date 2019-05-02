@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 
-#define NN 1100  // 250000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 0,93 GB de dades (com a màxim) carregades a memoria
+#define NN 250000000  // 250000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 0,93 GB de dades (com a màxim) carregades a memoria
 #define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
 
 int valors[NN + 1];  
@@ -87,8 +87,9 @@ int merge2_different(int* in1, int n_in1, int* in2, int n_in2, int *vo)
 
 int main(int nargs,char* args[])
 {
-	int ndades, i, nivell, parts = 11, porcio = NN / parts, residu = NN % parts, acumulador = 0;
-	int *vin, *vout, *vtmp;
+	printf("paprl?");
+	int ndades, i, j, nivell, parts = 11, porcio = NN / parts, residu = NN % parts, acumulador = 0;
+	int *vin, *vout, *vtmp, *vin2;
 	long long sum = 0;
 
 	int closest_powerof2 = 0;
@@ -142,7 +143,7 @@ int main(int nargs,char* args[])
 	if (id == 0)
 	{
 		for (i = 0; i < NN; i++) 
-			valors[i] = rand();
+			valors2[i] = rand();
 		printf("\n%d rand inicializtion done", id);
 	}
 	/* Enviar porcions
@@ -156,13 +157,15 @@ int main(int nargs,char* args[])
 	root: rank of sending process (integer) 
 	comm: communicator (handle) 
 	*/
-	MPI_Scatterv(&valors, num_elements, offsets, MPI_INT, &valors2, num_elements[id], MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Scatterv(&valors2, num_elements, offsets, MPI_INT, &valors, num_elements[id], MPI_INT, 0, MPI_COMM_WORLD);
 	printf("\nProces %d ha fet scatter", id);
-	qs(&valors2[0], num_elements[id]);
+	qs(&valors[0], num_elements[id]);
 	printf("\nProces %d ha fet qs", id);
-	vout = valors2;
+	
 	vin = valors;
-	vtmp = valors3;
+	vin2 = valors2;
+	vout = valors3;
+
 	int num_received_values;
 	int counter = 0;
 	for (i = 2; i < ideal_num_processos * 2; i *= 2)
@@ -172,9 +175,16 @@ int main(int nargs,char* args[])
 			proces_font = id;
 			proces_desti = id - id % i;
 			printf("\nProces %d en iteracio %d envia %d dades a %d", id, counter, num_elements[id], proces_desti);
-			MPI_Ssend (vout, num_elements[id], MPI_INT, proces_desti, 0, MPI_COMM_WORLD);
-			printf("\nProces %d en iteracio %d espera la barrera", id, counter);
+			MPI_Isend (vin, num_elements[id], MPI_INT, proces_desti, 0, MPI_COMM_WORLD, &request);
+			MPI_Request_free(&request);
+			printf("\nProces %d en iteracio %d ha acabat la transmissió i espera a la barrera", id, counter);
 			MPI_Barrier(MPI_COMM_WORLD);
+			MPI_Finalize();
+
+    		free(num_elements);
+    		free(offsets);
+
+    		exit(0);
 			//return 0;
 			// fin de hebra
 		}
@@ -185,34 +195,59 @@ int main(int nargs,char* args[])
 			if (proces_font != id && proces_font < parts)
 			{
 				printf("\nProces %d en iteracio %d INTENTA rebre dades de %d", id, counter, proces_font);
-				MPI_Recv(vin, NN, MPI_INT, proces_font, 0, MPI_COMM_WORLD, &estat);
+				MPI_Recv(vin2, NN, MPI_INT, proces_font, 0, MPI_COMM_WORLD, &estat);
 				MPI_Get_count(&estat, MPI_INT, &num_received_values);
 				
 				printf ("\nProces %i llegeix %i numeros i te %i a iteracio %i", id, num_received_values, num_elements[id], counter);
-
-				num_elements[id] = merge2_different(vout, num_elements[id], vin, num_received_values, vtmp);
+				if (id == 0)
+				{
+					printf("\nPrevia a Iteracio %i:\nvin2 ", counter);
+					for (j = 0; j < num_received_values; j++)
+						printf("%i ", vin2[j]);
+					printf("\nvin1 ");
+					for (j = 0; j < num_elements[id]; j++)
+						printf("%i ", vin[j]);
+				}
+				num_elements[id] = merge2_different(vin, num_elements[id], vin2, num_received_values, vout);
+				if (id == 0)
+				{
+					printf("\n After a Iteracio %i: ", counter);
+					for (j = 0; j < num_elements[id]; j++)
+						printf("%i ", vout[j]);
+				}
 				printf ("\nProces %i a iteracio % i retorna %i", id, counter, num_elements[id]);
-				vin = vtmp;
-				vtmp = vout;
-				vout = vin;
+				if (id == 0) printf("\ncounter %i i: %i ", counter, i);
+				
+				vtmp = vin; // copia temporal
+				vin = vout; // vin apunta a la sortida del merge
+				vout = vtmp; // vout ara apunta a les dades antigues
+				// vin2 s'anira matxacant pero no importa
+	
 			}
 		}
 		counter++;
+		if (id == 0) printf("\ncounter %i i: %i ", counter, i);
   	}
 
 	//if (id == 5) for (i = 0; i < num_elements[id]; i++) printf("%d ", valors2[i]);
   	printf("\ndw");
+  	MPI_Barrier(MPI_COMM_WORLD);
+  	printf("\ndw2");
     MPI_Finalize();
 
 	// Validacio
 	bool correct = 1;
 	for (i = 1; i < NN; i++) 
-		correct &= vout[i - 1] <= vin[i];
+	{
+		correct &= vin[i - 1] <= vin[i];
+		printf("%i ", vin[i]);
+	}
+	if (!correct) printf("\n Has sido un mal programador?? :P");
 
 	for (i = 0; i < NN; i += 100)
-		sum += vout[i];
+		sum += vin[i];
 
-	printf("validacio %lld \n",sum);
+	printf("\nvalidacio %lld \n",sum);
 
     free(num_elements);
     free(offsets);
