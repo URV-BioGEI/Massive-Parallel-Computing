@@ -92,13 +92,10 @@ int main(int nargs,char* args[])
 	long long sum = 0;
 
 	int closest_powerof2 = 0;
-	int ideal_num_processos = 1;
-	for (i = parts; i >= 1; i /= 2 )
-			closest_powerof2++;
-	for (i = 0; i < closest_powerof2; i ++)
-	{
-		ideal_num_processos *= 2;
-	}
+	int ideal_num_processos;
+
+	for (ideal_num_processos = 1; ideal_num_processos <= parts; ideal_num_processos *= 2) closest_powerof2++;
+	//printf("\nnum processos ideals: %i\nnum nivells de merge: %i", ideal_num_processos, closest_powerof2);
 	/* rank del proces    */
 	int id;
 	/* numero de processos        */
@@ -160,22 +157,21 @@ int main(int nargs,char* args[])
 	comm: communicator (handle) 
 	*/
 	MPI_Scatterv(&valors, num_elements, offsets, MPI_INT, &valors2, num_elements[id], MPI_INT, 0, MPI_COMM_WORLD);
-	printf("\n%d Scatter Done", id);
+	printf("\nProces %d ha fet scatter", id);
 	qs(&valors2[0], num_elements[id]);
-	printf("\n%d qs Done", id);
+	printf("\nProces %d ha fet qs", id);
 	vout = valors2;
 	vin = valors;
 	vtmp = valors3;
 	int num_received_values;
 	int counter = 0;
-	for (i = 2; i < ideal_num_processos; i *= 2)
+	for (i = 2; i < ideal_num_processos * 2; i *= 2)
 	{
 		if (id % i > 0)  // envies
 		{
 			proces_font = id;
-			proces_desti = id / i * i;
+			proces_desti = id - id % i;
 			printf("\nProces %d en iteracio %d envia %d dades a %d", id, counter, num_elements[id], proces_desti);
-			printf("\n");
 			MPI_Ssend (vout, num_elements[id], MPI_INT, proces_desti, 0, MPI_COMM_WORLD);
 			printf("\nProces %d en iteracio %d espera la barrera", id, counter);
 			MPI_Barrier(MPI_COMM_WORLD);
@@ -184,13 +180,12 @@ int main(int nargs,char* args[])
 		}
 		else  // reps
 		{
-			proces_font = id / i * i + i / 2;
+			proces_font = id + i / 2;
 			proces_desti = id;
 			if (proces_font != id && proces_font < parts)
 			{
 				printf("\nProces %d en iteracio %d INTENTA rebre dades de %d", id, counter, proces_font);
-				MPI_Recv(vin, NN, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &estat);
-				if (id == 0) printf ("\nProces 0 fa la recepcio a iteracio %i", counter);
+				MPI_Recv(vin, NN, MPI_INT, proces_font, 0, MPI_COMM_WORLD, &estat);
 				MPI_Get_count(&estat, MPI_INT, &num_received_values);
 				
 				printf ("\nProces %i llegeix %i numeros i te %i a iteracio %i", id, num_received_values, num_elements[id], counter);
