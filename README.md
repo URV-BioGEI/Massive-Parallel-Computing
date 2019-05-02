@@ -28,6 +28,7 @@ Nota: Tots els 8888 corresponen a un port arbitrari
  
 o bé clonem el repositori (let's be intelligent all together)
 
+##### OpenMP
 ## Per a compilar
 Utilitzem el makefile situannos a la carpeta src
 '''
@@ -45,5 +46,24 @@ Per a executar a gat hem de fer servir la comanda d'execucio remota.
 '''
 srun -p gat time ./QS_Paralel 300000000 32
 '''
+
+##### MPI
+## Per a instalar el compilador i les llibreries
+```
+sudo apt install libopenmpi-dev
+```
+
+## Per a compilar
+```
+mpicc -o output QS_Secuencial.c
+```
+
+## Per a executar
+```
+mpirun -np num_processos output
+```
+A on num_processos es un enter que especifica el nombre de processos a crear.
+
+
 
 
