@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 
-#define NN 110000000  // 250000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 0,93 GB de dades (com a màxim) carregades a memoria
+#define NN 1100000  // 250000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 0,93 GB de dades (com a màxim) carregades a memoria
 #define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
 
 int valors[NN + 1];  
@@ -199,7 +199,7 @@ int main(int nargs,char* args[])
 				MPI_Get_count(&estat, MPI_INT, &num_received_values);
 				
 				printf ("\nProces %i llegeix %i numeros i te %i a iteracio %i", id, num_received_values, num_elements[id], counter);
-				if (id == 0)
+				if (0)
 				{
 					printf("\nPrevia a Iteracio %i:\nvin2 ", counter);
 					for (j = 0; j < num_received_values; j++)
@@ -209,7 +209,7 @@ int main(int nargs,char* args[])
 						printf("%i ", vin[j]);
 				}
 				num_elements[id] = merge2_different(vin, num_elements[id], vin2, num_received_values, vout);
-				if (id == 0)
+				if (0)
 				{
 					printf("\n After a Iteracio %i: ", counter);
 					for (j = 0; j < num_elements[id]; j++)
@@ -240,7 +240,6 @@ int main(int nargs,char* args[])
 	for (i = 1; i < NN; i++) 
 	{
 		correct &= vin[i - 1] <= vin[i];
-		printf("%i ", vin[i]);
 	}
 	if (!correct) printf("\n Has sido un mal programador?? :P");
 
