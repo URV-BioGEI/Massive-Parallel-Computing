@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 
-#define NN 1100000  // 250000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 0,93 GB de dades (com a màxim) carregades a memoria
+#define NN 25000000  // 250000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 0,93 GB de dades (com a màxim) carregades a memoria
 #define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
 
 int valors[NN + 1];  
@@ -87,8 +87,7 @@ int merge2_different(int* in1, int n_in1, int* in2, int n_in2, int *vo)
 
 int main(int nargs,char* args[])
 {
-	printf("paprl?");
-	int ndades, i, j, nivell, parts = 11, porcio = NN / parts, residu = NN % parts, acumulador = 0;
+	int ndades, i, j, nivell, parts = 2, porcio = NN / parts, residu = NN % parts, acumulador = 0;
 	int *vin, *vout, *vtmp, *vin2;
 	long long sum = 0;
 

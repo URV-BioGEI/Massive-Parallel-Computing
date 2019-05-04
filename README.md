@@ -48,6 +48,9 @@ srun -p gat time ./QS_Paralel 300000000 32
 '''
 
 ##### MPI
+
+A la pràctica 2.1, amb 250000000 enters obtenim un número de validació de 2684311754311241.
+
 ## Per a instalar el compilador i les llibreries
 ```
 sudo apt install libopenmpi-dev
@@ -63,6 +66,11 @@ mpicc -o output QS_Secuencial.c
 mpirun -np num_processos output
 ```
 A on num_processos es un enter que especifica el nombre de processos a crear.
+
+## Per a executar en diversos cores de la màquina pop
+```
+salloc -p pop -n 14 srun -n 14 mpirun -n 14 out.bin
+```
 
 
 
