@@ -8,9 +8,9 @@
 #define NN 25000000  // 250000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 0,93 GB de dades (com a màxim) carregades a memoria
 #define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
 
-int valors[NN + 1];  
-int valors2[NN + 1];
-int valors3[NN + 1];
+	int valors[NN + 1];  
+	int valors2[NN + 1];
+	int valors3[NN + 1];
 
 // Funció quicksort
 // int pointer *val: Punter que apunta a un vector de dades compartit en memoria. 
@@ -71,15 +71,16 @@ int merge2_different(int* in1, int n_in1, int* in2, int n_in2, int *vo)
 int main(int nargs,char* args[])
 {
 
-	int closest_powerof2 = 0, ideal_num_processos, total_processos, id, parts = 7;
+	int closest_powerof2 = 0, ideal_num_processos, total_processos, id, ndades = 25000000, parts = 7;
 	for (ideal_num_processos = 1; ideal_num_processos <= parts; ideal_num_processos *= 2) closest_powerof2++; 
 	
 	MPI_Init(&nargs, &args);	// Inicialitzem entorn paralel
 	MPI_Comm_rank(MPI_COMM_WORLD, &id); 	// Obtenim nombre de processos 
 	MPI_Comm_size(MPI_COMM_WORLD, &total_processos); 	// Obtenim el numero total de processos 
 
-	int num_received_values, i, counter = 0, proces_objectiu, porcio = NN / parts, residu = NN % parts, acumulador = 0;
+	int num_received_values, i, counter = 0, proces_objectiu, porcio = ndades / parts, residu = ndades % parts, acumulador = 0;
 	int *vin, *vout, *vtmp, *vin2;
+
 	long long sum = 0;
 	MPI_Status estat;
 	MPI_Request request;
@@ -101,7 +102,7 @@ int main(int nargs,char* args[])
 	// Vector initialization
 	if (id == 0)
 	{
-		for (i = 0; i < NN; i++) 
+		for (i = 0; i < ndades; i++) 
 			valors2[i] = rand();
 	}
 	/* Enviar porcions
@@ -141,7 +142,7 @@ int main(int nargs,char* args[])
 			proces_objectiu = id + i / 2;
 			if (proces_objectiu != id && proces_objectiu < parts)
 			{
-				MPI_Recv(vin2, NN, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD, &estat);
+				MPI_Recv(vin2, ndades, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD, &estat);
 				MPI_Get_count(&estat, MPI_INT, &num_received_values);
 				num_elements[id] = merge2_different(vin, num_elements[id], vin2, num_received_values, vout);
 
@@ -158,10 +159,10 @@ int main(int nargs,char* args[])
 
 	// Validacio
 	bool correct = 1;
-	for (i = 1; i < NN; i++) 
+	for (i = 1; i < ndades; i++) 
 		correct &= vin[i - 1] <= vin[i];
 
-	for (i = 0; i < NN; i += 100)
+	for (i = 0; i < ndades; i += 100)
 		sum += vin[i];
 
 	printf("Validacio %lld\n",sum);
