@@ -5,12 +5,8 @@
 #include <stdbool.h>
 
 
-#define NN 25000000  // 250000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 0,93 GB de dades (com a màxim) carregades a memoria
-#define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
-
-	int valors[NN + 1];  
-	int valors2[NN + 1];
-	int valors3[NN + 1];
+//#define NN 25000000  // 250000000 int * (4 B/ 1 int) * (1 GB / 2^30 B) = 0,93 GB de dades (com a màxim) carregades a memoria
+//#define MAX_INT ((int) ((unsigned int) (-1) >> 1) )  // Definim el valor màxim d'un enter segons la màquina
 
 // Funció quicksort
 // int pointer *val: Punter que apunta a un vector de dades compartit en memoria. 
@@ -80,7 +76,9 @@ int main(int nargs,char* args[])
 
 	int num_received_values, i, counter = 0, proces_objectiu, porcio = ndades / parts, residu = ndades % parts, acumulador = 0;
 	int *vin, *vout, *vtmp, *vin2;
-
+	int valors[ndades + 1];  
+	int valors2[ndades + 1];
+	int valors3[ndades + 1];
 	long long sum = 0;
 	MPI_Status estat;
 	MPI_Request request;
