@@ -70,8 +70,8 @@ int merge2_different(int* in1, int n_in1, int* in2, int n_in2, int *vo)
 
 int main(int nargs,char* args[])
 {
-
-	int closest_powerof2 = 0, ideal_num_processos, total_processos, id, ndades = 25000000, parts = 7;
+	//printf("rili");
+	int closest_powerof2 = 0, ideal_num_processos, total_processos, id, ndades = atoi(args[1]), parts = atoi(args[2]);
 	for (ideal_num_processos = 1; ideal_num_processos <= parts; ideal_num_processos *= 2) closest_powerof2++; 
 	
 	MPI_Init(&nargs, &args);	// Inicialitzem entorn paralel
