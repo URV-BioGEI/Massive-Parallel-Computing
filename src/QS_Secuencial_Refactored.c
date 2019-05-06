@@ -127,9 +127,7 @@ int main(int nargs,char* args[])
 		if (id % i > 0)  // envies
 		{
 			proces_objectiu = id - id % i;
-			MPI_Isend (vin, num_elements[id], MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD, &request);
-			MPI_Request_free(&request);
-			MPI_Barrier(MPI_COMM_WORLD);
+			MPI_Send (vin, num_elements[id], MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD);
 			MPI_Finalize();
 
     		free(num_elements);
@@ -156,7 +154,6 @@ int main(int nargs,char* args[])
 		counter++;
   	}
 
-  	MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
 
 	// Validacio
