@@ -75,13 +75,13 @@ int main(int nargs,char* args[])
 	MPI_Comm_size(MPI_COMM_WORLD, &total_processos); 	// Obtenim el numero total de processos 
 
 	int num_received_values, i, counter = 0, proces_objectiu, porcio = ndades / parts, residu = ndades % parts, acumulador = 0;
-	int *vin, *vout, *vtmp, *vin2;
+	int *vin, *vtmp, *vin2;
+
 	int valors[ndades + 1];  
 	int valors2[ndades + 1];
-	int valors3[ndades + 1];
+
 	long long sum = 0;
 	MPI_Status estat;
-	MPI_Request request;
 	int *num_elements = malloc(sizeof(int) * parts);
 	int *offsets = malloc(sizeof(int) * parts);
 
@@ -119,7 +119,6 @@ int main(int nargs,char* args[])
 	
 	vin = valors;
 	vin2 = valors2;
-	vout = valors3;
 
 	for (i = 2; i < ideal_num_processos * 2; i *= 2)
 	{
@@ -140,13 +139,13 @@ int main(int nargs,char* args[])
 			proces_objectiu = id + i / 2;
 			if (proces_objectiu != id && proces_objectiu < parts)
 			{
-				MPI_Recv(vin2, ndades, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD, &estat);
+				MPI_Recv(&vin[num_elements[id]], ndades, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD, &estat);
 				MPI_Get_count(&estat, MPI_INT, &num_received_values);
-				num_elements[id] = merge2_different(vin, num_elements[id], vin2, num_received_values, vout);
+				num_elements[id] = merge2_different(vin, num_elements[id], &vin[num_elements[id]], num_received_values, vin2);
 
 				vtmp = vin; // copia temporal
-				vin = vout; // vin apunta a la sortida del merge
-				vout = vtmp; // vout ara apunta a les dades antigues
+				vin = vin2; // vin apunta a la sortida del merge
+				vin2 = vtmp; // vout ara apunta a les dades antigues
 				// vin2 s'anira matxacant pero no importa
 			}
 		}
