@@ -66,7 +66,6 @@ int merge2_different(int* in1, int n_in1, int* in2, int n_in2, int *vo)
 
 int main(int nargs,char* args[])
 {
-	//printf("rili");
 	int closest_powerof2 = 0, ideal_num_processos, total_processos, id, ndades = atoi(args[1]), parts = atoi(args[2]);
 	for (ideal_num_processos = 1; ideal_num_processos <= parts; ideal_num_processos *= 2) closest_powerof2++; 
 	
@@ -76,9 +75,6 @@ int main(int nargs,char* args[])
 
 	int num_received_values, i, counter = 0, proces_objectiu, porcio = ndades / parts, residu = ndades % parts, acumulador = 0;
 	int *vin, *vtmp, *vin2;
-
-	int valors[ndades + 1];  
-	int valors2[ndades + 1];
 
 	long long sum = 0;
 	MPI_Status estat;
@@ -96,7 +92,26 @@ int main(int nargs,char* args[])
         offsets[i] = acumulador;
         acumulador += num_elements[i];
 	}
+	bool flag = true;
+	int sizes[parts]; // conté el num d'elements optims per a cada vector
+	for (i = 2; i <= parts; i *= 2)
+	{
+		if (id % i > 0)
+		{
+			sizes[id] = (porcio + 1) * (i / 2); // mides tenint en compte un de mes
+			//printf("\nparts: %i id: %i", parts, id);
+			printf("\n\nProces %i inicialitzant vector amb %i", id, sizes[id]);
+			break;
+		}
+	}
+	if (id == 0)
+	{
+		printf("\n\nProces %i inicialitzant vector amb %i", id, ndades + 1);
+		sizes[id] = ndades + 1;
+	}
 
+	int valors[sizes[id] + 1];
+	int valors2[sizes[id] + 1];
 	// Vector initialization
 	if (id == 0)
 	{
