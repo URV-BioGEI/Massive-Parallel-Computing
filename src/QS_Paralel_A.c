@@ -63,8 +63,7 @@ int merge2_different(int* in1, int n_in1, int* in2, int n_in2, int *vo)
 
 void merge2(int* val, int n,int *vo)
  {
-  int vtmp;
-  int i,j,posi,posj;
+  int i,posi,posj;
 
    posi = 0;
    posj = (n/2);
@@ -85,11 +84,11 @@ int main(int nargs,char* args[])
 	MPI_Comm_rank(MPI_COMM_WORLD, &id); 	// Obtenim nombre de processos
 	MPI_Comm_size(MPI_COMM_WORLD, &total_processos); 	// Obtenim el numero total de processos
 
-	int num_received_values, i, counter = 0, proces_objectiu, porcio = ndades / parts, residu = ndades % parts, acumulador = 0, a = 0;
+	int i, proces_objectiu, porcio = ndades / parts;
 	int *vin, *vtmp, *vin2, *valors, *valors2;
 	long long sum = 0;
 	MPI_Status estat;
-	MPI_Request request;
+	//MPI_Request request;
 
 	// Compute sizes of vectors
 	if (id != 0)  // process 0 is the only one that does not adapt to the mathematical expression to compute sizes
@@ -101,7 +100,7 @@ int main(int nargs,char* args[])
 				printf("Proces %i inicialitza %i bytes", id, porcio * (i / 2));
 				valors = malloc((porcio * (i / 2) + 1) * sizeof(int));  // reservem una mida de porcio * i/2. la mida
 				valors2 = malloc((porcio * (i / 2) + 1) * sizeof(int));
-				printf("Proces %i fi reserva mem", id, porcio * (i / 2));
+				printf("Proces %i fi reserva mem", id);
 				break;
 			}
 		}
