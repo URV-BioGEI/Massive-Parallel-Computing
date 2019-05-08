@@ -151,7 +151,7 @@ int main(int nargs,char* args[])
 			}
 		}
 	}
-	
+
 	bool correcte = true;
 	for (i = 1; i < ndades; i++)
 		correcte &= vin[i - 1] <= vin[i];
