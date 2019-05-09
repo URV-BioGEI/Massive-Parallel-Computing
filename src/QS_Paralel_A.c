@@ -47,19 +47,6 @@ void qs(int *val, int ne)
 }
 
 // Funció merge reescrita
-//
-int merge2_different(int* in1, int n_in1, int* in2, int n_in2, int *vo)
-{
-	int i, posi = 0, posj = 0;
-
-	for (i = 0; i < n_in1 + n_in2; i++)  // recorrem el conjunt dels dos vectors
-		// si hem acabat amb el vector j o no hem acabat el vector i & el valor al vector i es menor o igual que el valor al vector j
-		if ( ((posi < n_in1) && (in1[posi] <= in2[posj])) || (posj >= n_in2))
-			vo[i] = in1[posi++];
-		else
-			vo[i] = in2[posj++];
-	return n_in2 + n_in1;
-}
 
 void merge2(int* val, int n,int *vo)
  {
@@ -78,13 +65,13 @@ void merge2(int* val, int n,int *vo)
 int main(int nargs,char* args[])
 {
 	//printf("rili");
-	int id, ndades = atoi(args[1]), parts = atoi(args[2]), total_processos;
+	int id, ndades = atoi(args[1]) total_processos;
 
 	MPI_Init(&nargs, &args);	// Inicialitzem entorn paralel
 	MPI_Comm_rank(MPI_COMM_WORLD, &id); 	// Obtenim nombre de processos
 	MPI_Comm_size(MPI_COMM_WORLD, &total_processos); 	// Obtenim el numero total de processos
 
-	int i, proces_objectiu, porcio = ndades / parts;
+	int i, proces_objectiu, porcio = ndades / total_processos;
 	int *vin, *vtmp, *vin2, *valors, *valors2;
 	long long sum = 0;
 	MPI_Status estat;
@@ -93,7 +80,7 @@ int main(int nargs,char* args[])
 	// Compute sizes of vectors
 	if (id != 0)  // process 0 is the only one that does not adapt to the mathematical expression to compute sizes
 	{
-		for (i = 2; i <= parts; i *= 2)
+		for (i = 2; i <= total_processos; i *= 2)
 		{
 			if (id % i > 0)  // Si no és múltiple de l'actual potencia de dos
 			{
@@ -122,7 +109,7 @@ int main(int nargs,char* args[])
 	vin = valors;
 	vin2 = valors2;
 
-    for (i = 2; i < parts * 2; i *= 2)
+    for (i = 2; i < total_processos * 2; i *= 2)
 	{
 		if (id % i > 0)
 		{
@@ -136,18 +123,15 @@ int main(int nargs,char* args[])
 		else
 		{
 			proces_objectiu = id + i / 2;
-			if(proces_objectiu != id && proces_objectiu < parts)
-			{
-				printf("Soy %d, quiero recibir %d de %d, espero \n", id, i/2*porcio, proces_objectiu);
-				MPI_Recv(&vin[i / 2 * porcio], i / 2 * porcio, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD, &estat);  // rebo porcio * i / 2 dades, que no consulto perque ja ho se
-				printf("Soy %d, he recibido %d de %d, espero \n", id, i/2*porcio, proces_objectiu);
-				merge2(vin, porcio * i, vin2);
+			printf("Soy %d, quiero recibir %d de %d, espero \n", id, i/2*porcio, proces_objectiu);
+			MPI_Recv(&vin[i / 2 * porcio], i / 2 * porcio, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD, &estat);  // rebo porcio * i / 2 dades, que no consulto perque ja ho se
+			printf("Soy %d, he recibido %d de %d, espero \n", id, i/2*porcio, proces_objectiu);
+			merge2(vin, porcio * i, vin2);
 
-				vtmp = vin;  // intercambiem punters
-				vin = vin2;
-				vin2 = vtmp;
+			vtmp = vin;  // intercambiem punters
+			vin = vin2;
+			vin2 = vtmp;
 
-			}
 		}
 	}
 
@@ -156,7 +140,7 @@ int main(int nargs,char* args[])
 		correcte &= vin[i - 1] <= vin[i];
 	assert(correcte);
 	for (i = 0; i < ndades; i += 100)
-		sum+=vin[i];
+		sum += vin[i];
 	printf("validacio %lld \n", sum);
 	MPI_Finalize();
 	return 0;
