@@ -65,7 +65,7 @@ void merge2(int* val, int n,int *vo)
 int main(int nargs,char* args[])
 {
 	//printf("rili");
-	int id, ndades = atoi(args[1]) total_processos;
+	int id, ndades = atoi(args[1]), total_processos;
 
 	MPI_Init(&nargs, &args);	// Inicialitzem entorn paralel
 	MPI_Comm_rank(MPI_COMM_WORLD, &id); 	// Obtenim nombre de processos
