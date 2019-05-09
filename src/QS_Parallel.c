@@ -3,7 +3,7 @@
 #include <assert.h>  
 #include <mpi.h>
 #include <stdbool.h>
-
+#include <string.h>
 
 // Funció quicksort
 // int pointer *val: Punter que apunta a un vector de dades compartit en memoria. 
@@ -45,21 +45,21 @@ void qs(int *val, int ne)
 	if (f > 1) qs(val, f);  
 	if (i < ne - 1) qs(&val[i], ne - f - 1);
 }
-
-// Funció merge reescrita
-// 
-int merge2_different(int* in1, int n_in1, int* in2, int n_in2, int *vo)
+void merge2(int* val, int n, int *vo)
 {
-	int i, posi = 0, posj = 0; 
+	int i, posi, posj; 
+
+	posi = 0;  // posicio inicial en el vector esquerra
+	posj = (n / 2);  // posicio inicial en el vector dret //? redundant parenthesis
  
-	for (i = 0; i < n_in1 + n_in2; i++)  // recorrem el conjunt dels dos vectors
+	for (i = 0; i < n; i++)  // recorrem el conjunt dels dos vectors
 		// si hem acabat amb el vector j o no hem acabat el vector i & el valor al vector i es menor o igual que el valor al vector j 
-		if ( ((posi < n_in1) && (in1[posi] <= in2[posj])) || (posj >= n_in2)) 
-			vo[i] = in1[posi++];
+		if (((posi < n/2) && (val[posi] <= val[posj])) || (posj >= n)) 
+			vo[i] = val[posi++];
 		else 
-			vo[i] = in2[posj++];
-	return n_in2 + n_in1;
+			vo[i] = val[posj++];
 }
+
 
 int main(int nargs,char* args[])
 {
@@ -70,14 +70,16 @@ int main(int nargs,char* args[])
 	MPI_Init(&nargs, &args);	// Inicialitzem entorn paralel
 	MPI_Comm_rank(MPI_COMM_WORLD, &id); 	// Obtenim nombre de processos 
 	MPI_Comm_size(MPI_COMM_WORLD, &total_processos); 	// Obtenim el numero total de processos 
-
+	int x=2;
+	while(id%x==0 && x<parts)
+	{
+		x=x*2;
+	}
 	int num_received_values, i, counter = 0, proces_objectiu, porcio = ndades / parts, residu = ndades % parts, acumulador = 0;
 	int *vin, *vout, *vtmp, *vin2;
-	printf("Caco %d, porcio %d \n", id, porcio);	
-	fflush(stdout);
-	int * valors=malloc((ndades+1)*sizeof(int));  
-	printf("Caca %d \n", id);	
-	fflush(stdout);
+	int * valors=malloc(((x*porcio)+1)*sizeof(int));  
+	int * valors2=malloc(((x*porcio)+1)*sizeof(int));  
+	//int * salida = malloc(((porcio*2)+1)*sizeof(int));
 	long long sum = 0;
 	MPI_Status estat;
 	MPI_Request request;
@@ -94,6 +96,52 @@ int main(int nargs,char* args[])
 		}
 	}
 	qs(&valors[0], porcio);
-        MPI_Finalize();
+	vin = valors;
+	vout= valors2;
+	//vout= salida;
+        for (i=2; i<total_processos*2; i*=2)
+	{
+		if(id%i > 0)
+		{
+			proces_objectiu=id-id%i;
+			//printf("Soy %d, quiero enviar %d a %d, MUERO \n", id, i/2*porcio, proces_objectiu); 
+			//fflush(stdout);
+			//if (i==4){
+				
+			//	MPI_Send(vin, i*porcio, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD);
+			//}
+		        //else{
+			MPI_Send(vin, i/2*porcio, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD);
+			//}
+			//printf("Soy %d, he enviado %d a %d, MUERO \n", id, i/2*porcio, proces_objectiu); 
+			//fflush(stdout);
+			MPI_Finalize();
+			exit(0);
+		}
+		else
+		{
+			proces_objectiu=id+i/2;
+			if(proces_objectiu != id && proces_objectiu < parts)
+			{	
+				//printf("Soy %d, quiero recibir %d de %d, espero \n", id, i/2*porcio, proces_objectiu); 
+			        //fflush(stdout);
+				MPI_Recv(&vin[i/2*porcio], ndades/2, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD, &estat);
+				//printf("Soy %d, he recibido %d de %d, espero \n", id, i/2*porcio, proces_objectiu); 
+			        //fflush(stdout);
+				merge2(vin, i*porcio, vout);
+				//printf("Soy %d, he mergeado %d con %d \n", id, i*porcio, proces_objectiu); 
+			        //fflush(stdout);
+				vtmp=vin;
+				vin=vout;
+				vout=vtmp;
+			}
+		}
+	}
+	for(i=1;i<ndades;i++) assert( vin[i-1]<=vin[i]);
+	for(i=0;i<ndades; i+=100) sum+=vin[i];
+	printf("validacio %lld \n", sum);
+	
+	MPI_Finalize();
+	
 	return 0;
 }
