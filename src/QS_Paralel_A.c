@@ -84,10 +84,8 @@ int main(int nargs,char* args[])
 		{
 			if (id % i > 0)  // Si no és múltiple de l'actual potencia de dos
 			{
-				printf("\nProces %i inicialitza %i ints", id, porcio * (i / 2));
 				valors = malloc(porcio * (i / 2) * sizeof(int));  // reservem una mida de porcio * i/2. la mida
 				valors2 = malloc(porcio * (i / 2) * sizeof(int));
-				printf("\nProces %i fi reserva mem", id);
 				break;
 			}
 		}
@@ -114,18 +112,14 @@ int main(int nargs,char* args[])
 		if (id % i > 0)
 		{
 			proces_objectiu = id - id % i;
-			printf("Soy %d, quiero enviar %d a %d, MUERO \n", id, i/2*porcio, proces_objectiu);
 			MPI_Send(vin, i / 2 * porcio, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD);
-			printf("Soy %d, he enviado %d a %d, MUERO \n", id, i/2*porcio, proces_objectiu);
 			MPI_Finalize();
 			exit(0);
 		}
 		else
 		{
 			proces_objectiu = id + i / 2;
-			printf("Soy %d, quiero recibir %d de %d, espero \n", id, i/2*porcio, proces_objectiu);
 			MPI_Recv(&vin[i / 2 * porcio], i / 2 * porcio, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD, &estat);  // rebo porcio * i / 2 dades, que no consulto perque ja ho se
-			printf("Soy %d, he recibido %d de %d, espero \n", id, i/2*porcio, proces_objectiu);
 			merge2(vin, porcio * i, vin2);
 
 			vtmp = vin;  // intercambiem punters
