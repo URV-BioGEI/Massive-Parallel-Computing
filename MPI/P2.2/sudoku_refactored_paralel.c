@@ -98,7 +98,6 @@ int main(int nargs, char* args[])
       }
       if (flag)  // enviem dades als esclaus
       {
-        printf("\nstate: %i %i %i %i %i", state[0], state[1], state[2], state[3], state[4]);
         MPI_Send(state, 5, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD);
         proces_objectiu++;
         if (proces_objectiu == total_processos)
@@ -130,8 +129,8 @@ int main(int nargs, char* args[])
       MPI_Send(state, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
     }
     MPI_Reduce(&nsol, &total,1, MPI_LONG_LONG_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-    printf("\nnumero solucions : %lld\n", total);
     MPI_Finalize();
+    printf("\nnumero solucions : %lld\n", total);
     return 0;
   }
   else  // slave
@@ -154,6 +153,7 @@ int main(int nargs, char* args[])
       MPI_Recv(&taula[3][4], 5, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &estat); 
       /*if (id == 1)
       {
+        printf("\n\n");
         for (i = 0; i < 9; i++)
         {
           printf("\n");
