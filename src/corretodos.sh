@@ -1,26 +1,29 @@
 
 #!/bin/bash
 rm results.txt
-cores=('8' '16' '32')
-binari=('Validation_ForNoWait');
+nodes=('2' '2' '4' '4' '8' '8' '8' )
+procesos=('2' '4' '4' '8' '8' '16' '32')
+binari=('P2.1_CPM_MarineRuizv2');
 for name in ${binari[@]}; do
-
 	echo "$name" >> results.txt
 	echo "$name"
-	for core in ${cores[@]}; do
-		echo "$core" >> results.txt
+	contproc=0
+	for core in ${nodes[@]}; do
+		proc=${procesos[$contproc]}
+		echo "$core $proc" >> results.txt
 		i="0"
 		while [ $i -lt 3 ]
 		do
 			echo "$i"
-			echo "srun -p roquer time ./$name 300000000 $core 2>&1"
-			times=$(srun -p roquer time ./$name 300000000 $core 2>&1)
+			echo "salloc -p pops -N $core srun -n 1 time mpirun -host pop1,pop2,pop3,pop4,pop5,pop6,pop7,pop8 -c $proc ./$name 300000000 2>&1"
+			times=$(salloc -p pops -N $core srun -n 1 time mpirun -host pop1,pop2,pop3,pop4,pop5,pop6,pop7,pop8 -c $proc ./$name 300000000 2>&1)
 			result=$(echo "$times" | grep "elapsed" | cut -d ' ' -f3 | cut -c 3-7)
 			echo "result is $result"
 			echo "$times"
 			echo "$result" >> results.txt	
 			i=$[$i+1]
 		done
+		contproc=$[$contproc+1]
 	done
 done
 

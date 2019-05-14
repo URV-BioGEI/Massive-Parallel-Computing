@@ -106,7 +106,6 @@ int main(int nargs,char* args[])
 
 	vin = valors;
 	vin2 = valors2;
-	MPI_Barrier(MPI_COMM_WORLD);
 
     for (i = 2; i < total_processos * 2; i *= 2)
 	{
@@ -114,7 +113,8 @@ int main(int nargs,char* args[])
 		{
 			proces_objectiu = id - id % i;
 			MPI_Send(vin, i / 2 * porcio, MPI_INT, proces_objectiu, 0, MPI_COMM_WORLD);
-			break;
+			MPI_Finalize();
+			exit(0);
 		}
 		else
 		{
@@ -128,8 +128,6 @@ int main(int nargs,char* args[])
 
 		}
 	}
-	MPI_Barrier(MPI_COMM_WORLD);
-	if(id==0){
 		bool correcte = true;
 		for (i = 1; i < ndades; i++)
 			correcte &= vin[i - 1] <= vin[i];
@@ -141,7 +139,5 @@ int main(int nargs,char* args[])
 		printf("validacio %lld \n", sum);
 		MPI_Finalize();
 		return 0;
-	}
-	else{
-		MPI_Finalize();
-	}
+		
+}
