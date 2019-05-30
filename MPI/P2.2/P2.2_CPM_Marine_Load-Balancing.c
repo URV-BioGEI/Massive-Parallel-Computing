@@ -90,6 +90,7 @@ int main(int nargs, char* args[])
   for (i = 0; i < 9*9*9*9*9; i++)  // iterem sobre espai de possibles solucions
   {
     flag = CERT;
+    // Evitem solucions amb elements repetits
     for (j = 0; j < (POSICIONS - 1) && flag; j++)
     {
       tmp = state[j];
@@ -104,9 +105,9 @@ int main(int nargs, char* args[])
     }
     if (flag)  // si flag vol dir que Podem posar tots els valors de state a cada posicio
     {
-      if (num_solucio_actual % total_processos == id)
+      if (num_solucio_actual % total_processos == id)  // repartim equitativament entre processos
       {
-        printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4]);
+        //printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4]);
         for (j = 0; j < POSICIONS; j++)  // Apliquem semi-solucio
         {
           taula[3][4 + j] = state[j];
@@ -138,6 +139,7 @@ int main(int nargs, char* args[])
   }
   MPI_Reduce(&nsol, &total, 1, MPI_LONG_LONG_INT, MPI_SUM, 0, MPI_COMM_WORLD);
   MPI_Finalize();
-  printf("\nnumero solucions : %lld\n", total);
+  if (id == 0)
+    printf("\nnumero solucions : %lld\n", total);
   return 0;
 }
