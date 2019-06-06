@@ -75,16 +75,16 @@ return(s);
 /////////////////////////////////////////////////////////////////
 int main(int nargs, char* args[])
 {
-  int i, j, k, tmp, total_processos, id, num_solucio_actual = 0;
+  int i, j, total_processos, id, num_solucio_actual = 0;
 
   MPI_Init(&nargs, &args);
   MPI_Comm_rank(MPI_COMM_WORLD, &id);
   MPI_Comm_size(MPI_COMM_WORLD, &total_processos);
 
   long long int nsol = 0, total = 0;
-  int state[5];
+  int state[POSICIONS];
 
-  for (i = 0; i < 5; i++)
+  for (i = 0; i < POSICIONS; i++)
     state[i] = 1;
 
   int flag = CERT, current_position = 4, num_solucions_explorades = 1;
@@ -94,35 +94,25 @@ int main(int nargs, char* args[])
   for (i = 0; i < num_solucions_explorades; i++)  // iterem sobre espai de possibles solucions VR(9, 5) = 9^⁵
   {
     flag = CERT;
-    // Evitem solucions amb elements repetits
-    for (j = 0; j < (POSICIONS - 1) && flag; j++)
-    {
-      tmp = state[j];
-      for (k = j + 1; k < POSICIONS && flag; k++)
-      {
-        if (tmp == state[k]) flag = FALS;
-      }
-    }
     for (j = 0; j < POSICIONS && flag; j++)  // provem solució parant quan toca
-    {
-      flag &= puc_posar(3 + (j + 4) / 9, (4 + j) % 9, state[j]);  // HC for first empty row and column with zeros but parametrized with number of explored positions
+    { // HC for first empty row and column with zeros but parametrized with number of explored positions
+      flag &= puc_posar(3 + (j + 4) / 9, (4 + j) % 9, state[j]); 
+      taula[3 + (j + 4) / 9][(4 + j) % 9] = state[j];  // Apliquem solució encara que no poguem posar, pero sortim immediatament del bucle 
     }
     if (flag)  // si flag vol dir que Podem posar tots els valors de state a cada posicio
     {
       if (num_solucio_actual % total_processos == id)  // repartim equitativament entre processos
       {
         printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4]);
-        for (j = 0; j < POSICIONS; j++)  // Apliquem semi-solucio
-        {
-          taula[3][4 + j] = state[j];
-        }
-        nsol += recorrer(3, 4);  // fem calculs
-        for (j = 0; j < POSICIONS; j++)  // ressetegem taula
-        {
-          taula[3][4 + j] = 0;
-        }
+        //printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4], state[5], state[6]);
+        nsol += recorrer(3 + (j + 4) / 9, (4 + j) % 9);  // fem calculs
       }
       num_solucio_actual++;
+    }
+    while (j >= 0)  // ressetegem la taula
+    {
+      taula[3 + (j + 4) / 9][(4 + j) % 9] = 0;
+      j--;
     }
 
     // Actualitzem estat
@@ -134,7 +124,7 @@ int main(int nargs, char* args[])
         current_position--;
       }
       state[current_position]++; // incrementem el nombre al que li arriba la xifra portant
-      current_position = 4;  
+      current_position = POSICIONS - 1;  
     }
     else  // hem de sumar normal
     {
