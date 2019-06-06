@@ -87,7 +87,7 @@ int main(int nargs, char* args[])
     state[i] = 1;
 
   int flag = CERT, current_position = 4;
-  for (i = 0; i < 9*9*9*9*9; i++)  // iterem sobre espai de possibles solucions
+  for (i = 0; i < 9*9*9*9*9; i++)  // iterem sobre espai de possibles solucions VR(9, 5) = 9^⁵
   {
     flag = CERT;
     // Evitem solucions amb elements repetits
@@ -107,7 +107,7 @@ int main(int nargs, char* args[])
     {
       if (num_solucio_actual % total_processos == id)  // repartim equitativament entre processos
       {
-        //printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4]);
+        printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4]);
         for (j = 0; j < POSICIONS; j++)  // Apliquem semi-solucio
         {
           taula[3][4 + j] = state[j];

@@ -1,20 +1,23 @@
-CC = gcc
-CFLAGS = -O3 -Wall -fopenmp
+CC = mpicc
+CFLAGS = -O3 -Wall
 
-all : sudoku_secuencial P1.2_CPM_MarineRuiz
+all : sudoku_secuencial P2.2_CPM_MarineRuiz P2.2_CPM_Marine P2.2_CPM_Marine_Master-Slave
 
-P1.2_CPM_MarineRuiz : P1.2_CPM_MarineRuiz.c
-	$(CC) $(CFLAGS) -o P1.2_CPM_MarineRuiz P1.2_CPM_MarineRuiz.c
+P2.2_CPM_MarineRuiz : P2.2_CPM_MarineRuiz.c
+	$(CC) $(CFLAGS) -o P2.2_CPM_MarineRuiz P2.2_CPM_MarineRuiz.c
+
+P2.2_CPM_Marine : P2.2_CPM_Marine.c
+	$(CC) $(CFLAGS) -o P2.2_CPM_Marine P2.2_CPM_Marine.c
 
 sudoku_secuencial : sudoku_secuencial.c
 	$(CC) $(CFLAGS) -o sudoku_secuencial sudoku_secuencial.c
 
-run : P2.1_CPM_MarineRuiz
-	time ./P1.2_CPM_MarineRuiz
+P2.2_CPM_Marine_Master-Slave : P2.2_CPM_Marine_Master-Slave.c
+	$(CC) $(CFLAGS) -o P2.2_CPM_Marine_Master-Slave P2.2_CPM_Marine_Master-Slave.c
 
-runSecuencial : sudoku_secuencial
-	time ./sudoku_secuencial
+run : P2.2_CPM_Marine
+	bash corretodos.sh
 
 .PHONY : clean
 clean :
-	rm sudoku_secuencial P2.1_CPM_MarineRuiz
+	rm sudoku_secuencial P2.2_CPM_MarineRuiz P2.2_CPM_Marine P2.2_CPM_Marine_Master-Slave
