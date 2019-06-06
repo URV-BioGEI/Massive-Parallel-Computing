@@ -9,7 +9,8 @@
 #define FALS 0
 #define POSICIONS 5
 
-// Ha de ser inicialment correcta !!
+// Ha de ser inicialment correcta !! Número de solucions esperades: 13889280
+// Execució a POP en secuencial 93,5 segons
 int taula[9][9] = \
         {1,2,3, 4,5,6,  7,8,9,  \
          9,8,7, 3,2,1,  6,5,4,  \
@@ -86,8 +87,11 @@ int main(int nargs, char* args[])
   for (i = 0; i < 5; i++)
     state[i] = 1;
 
-  int flag = CERT, current_position = 4;
-  for (i = 0; i < 9*9*9*9*9; i++)  // iterem sobre espai de possibles solucions VR(9, 5) = 9^⁵
+  int flag = CERT, current_position = 4, num_solucions_explorades = 1;
+  for (i = 0; i < POSICIONS; i++)
+    num_solucions_explorades *= 9;
+
+  for (i = 0; i < num_solucions_explorades; i++)  // iterem sobre espai de possibles solucions VR(9, 5) = 9^⁵
   {
     flag = CERT;
     // Evitem solucions amb elements repetits
@@ -140,6 +144,7 @@ int main(int nargs, char* args[])
   MPI_Reduce(&nsol, &total, 1, MPI_LONG_LONG_INT, MPI_SUM, 0, MPI_COMM_WORLD);
   MPI_Finalize();
   if (id == 0)
+
     printf("\nnumero solucions : %lld\n", total);
   return 0;
 }
