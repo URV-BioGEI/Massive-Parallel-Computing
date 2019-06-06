@@ -23,4 +23,4 @@ runone : P2.2_CPM_Marine
 
 .PHONY : clean
 clean :
-	rm sudoku_secuencial P2.2_CPM_MarineRuiz P2.2_CPM_Marine P2.2_CPM_Marine_Master-Slave >/dev/null 2>&1
+	rm sudoku_secuencial P2.2_CPM_MarineRuiz P2.2_CPM_Marine P2.2_CPM_Marine_Master-Slave

@@ -103,9 +103,9 @@ int main(int nargs, char* args[])
         if (tmp == state[k]) flag = FALS;
       }
     }
-    for (j = 0; j < 5 && flag; j++)  // provem solució parant quan toca
+    for (j = 0; j < POSICIONS && flag; j++)  // provem solució parant quan toca
     {
-      flag &= puc_posar(3, 4 + j, state[j]);  // HC for first empty row
+      flag &= puc_posar(3 + (j + 4) / 9, (4 + j) % 9, state[j]);  // HC for first empty row and column with zeros but parametrized with number of explored positions
     }
     if (flag)  // si flag vol dir que Podem posar tots els valors de state a cada posicio
     {
