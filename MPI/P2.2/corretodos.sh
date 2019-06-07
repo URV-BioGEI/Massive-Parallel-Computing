@@ -13,6 +13,7 @@ do
 	for core in ${nodes[@]}
 	do
 		proc=${procesos[$contproc]}
+		echo "$core $proc"
 		echo "$core $proc" >> results.txt
 		i="0"
 		while [ $i -lt 3 ]
@@ -25,6 +26,7 @@ do
 		done
 		contproc=$[$contproc+1]
 	done
+	echo "8 x 2 64"
 	echo "8 x 2 64" >> results.txt
 	i="0"
 	while [ $i -lt 3 ]
@@ -36,6 +38,7 @@ do
 		i=$[$i+1]
 	done
 
+	echo "8 x 4 128"
 	echo "8 x 4 128" >> results.txt
 	i="0"
 	while [ $i -lt 3 ]
