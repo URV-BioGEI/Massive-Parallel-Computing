@@ -3,7 +3,7 @@
 rm results.txt
 nodes=('2' '2' '4' '4' '8' '8' '8' )
 procesos=('2' '4' '4' '8' '8' '16' '32')
-binari=('P2.2_CPM_Marine P2.2_CPM_Marine_Master-Slave');
+binari=('P2.2_CPM_Marine P2.2_CPM_Marine_Master-Slave P2.2_CPM_Marine_Depth7 P2.2_CPM_Marine_Non-Balanced P2.2_CPM_Marine_Non-Balanced_Depth7');
 for name in ${binari[@]}; do
 	echo "$name" >> results.txt
 	echo "$name"
