@@ -7,7 +7,7 @@
 
 #define CERT 1
 #define FALS 0
-#define POSICIONS 8
+#define POSICIONS 7
 
 // Ha de ser inicialment correcta !! Número de solucions esperades: 13889280
 // Execució a POP en secuencial 93,5 segons

@@ -7,7 +7,7 @@
 
 #define CERT 1
 #define FALS 0
-#define POSICIONS 8
+#define POSICIONS 7
 
 // Ha de ser inicialment correcta !! Número de solucions esperades: 13889280
 // Execució a POP en secuencial 93,5 segons
@@ -93,27 +93,30 @@ int main(int nargs, char* args[])
 
   for (i = 0; i < num_solucions_explorades; i++)  // iterem sobre espai de possibles solucions VR(9, 5) = 9^⁵
   {
-    flag = CERT;
-    for (j = 0; j < POSICIONS && flag; j++)  // provem solució parant quan toca
-    { // HC for first empty row and column with zeros but parametrized with number of explored positions
-      flag &= puc_posar(3 + (j + 4) / 9, (4 + j) % 9, state[j]); 
-      taula[3 + (j + 4) / 9][(4 + j) % 9] = state[j];  // Apliquem solució encara que no poguem posar, pero sortim immediatament del bucle 
-    }
-    if (flag)  // si flag vol dir que Podem posar tots els valors de state a cada posicio
+    if (i % total_processos == id)
     {
-      if (num_solucio_actual % total_processos == id)  // repartim equitativament entre processos
-      {
-        //printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4]);
-        nsol += recorrer(3 + (j + 4) / 9, (4 + j) % 9);  // fem calculs
+      flag = CERT;
+      for (j = 0; j < POSICIONS && flag; j++)  // provem solució parant quan toca
+      { // HC for first empty row and column with zeros but parametrized with number of explored positions
+        flag &= puc_posar(3 + (j + 4) / 9, (4 + j) % 9, state[j]); 
+        taula[3 + (j + 4) / 9][(4 + j) % 9] = state[j];  // Apliquem solució encara que no poguem posar, pero sortim immediatament del bucle 
       }
-      num_solucio_actual++;
+      if (flag)  // si flag vol dir que Podem posar tots els valors de state a cada posicio
+      {
+        if (num_solucio_actual % total_processos == id)  // repartim equitativament entre processos
+        {
+          //printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4]);
+          //printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4], state[5], state[6]);
+          nsol += recorrer(3 + (j + 4) / 9, (4 + j) % 9);  // fem calculs
+        }
+        num_solucio_actual++;
+      }
+      while (j >= 0)  // ressetegem la taula
+      {
+        taula[3 + (j + 4) / 9][(4 + j) % 9] = 0;
+        j--;
+      }
     }
-    while (j >= 0)  // ressetegem la taula
-    {
-      taula[3 + (j + 4) / 9][(4 + j) % 9] = 0;
-      j--;
-    }
-
     // Actualitzem estat
     if (state[current_position] == 9)  // hem de sumar portant
     {

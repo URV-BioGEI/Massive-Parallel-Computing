@@ -104,6 +104,7 @@ int main(int nargs, char* args[])
       if (num_solucio_actual % total_processos == id)  // repartim equitativament entre processos
       {
         //printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4]);
+        //printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4], state[5], state[6]);
         nsol += recorrer(3 + (j + 4) / 9, (4 + j) % 9);  // fem calculs
       }
       num_solucio_actual++;

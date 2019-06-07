@@ -2,12 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <assert.h>
-#include <mpi.h>
 #include <string.h>
 
 #define CERT 1
 #define FALS 0
-#define POSICIONS 8
 
 // Ha de ser inicialment correcta !! Número de solucions esperades: 13889280
 // Execució a POP en secuencial 93,5 segons
@@ -73,40 +71,36 @@ return(s);
 }
 
 /////////////////////////////////////////////////////////////////
-int main(int nargs, char* args[])
+int num_valid_semisolutions(int posicions)
 {
-  int i, j, total_processos, id, num_solucio_actual = 0;
+  int i, j, k, num_solucio_actual = 0;
+  if (posicions == 0) return 0;
+  int state[posicions];
+  long long int nsol = 0;
 
-  MPI_Init(&nargs, &args);
-  MPI_Comm_rank(MPI_COMM_WORLD, &id);
-  MPI_Comm_size(MPI_COMM_WORLD, &total_processos);
-
-  long long int nsol = 0, total = 0;
-  int state[POSICIONS];
-
-  for (i = 0; i < POSICIONS; i++)
+  for (i = 0; i < posicions; i++)
     state[i] = 1;
 
   int flag = CERT, current_position = 4, num_solucions_explorades = 1;
-  for (i = 0; i < POSICIONS; i++)
+  for (i = 0; i < posicions; i++)
     num_solucions_explorades *= 9;
 
   for (i = 0; i < num_solucions_explorades; i++)  // iterem sobre espai de possibles solucions VR(9, 5) = 9^⁵
   {
     flag = CERT;
-    for (j = 0; j < POSICIONS && flag; j++)  // provem solució parant quan toca
+    for (j = 0; j < posicions && flag; j++)  // provem solució parant quan toca
     { // HC for first empty row and column with zeros but parametrized with number of explored positions
       flag &= puc_posar(3 + (j + 4) / 9, (4 + j) % 9, state[j]); 
       taula[3 + (j + 4) / 9][(4 + j) % 9] = state[j];  // Apliquem solució encara que no poguem posar, pero sortim immediatament del bucle 
     }
     if (flag)  // si flag vol dir que Podem posar tots els valors de state a cada posicio
     {
-      if (num_solucio_actual % total_processos == id)  // repartim equitativament entre processos
-      {
-        //printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4]);
-        nsol += recorrer(3 + (j + 4) / 9, (4 + j) % 9);  // fem calculs
-      }
       num_solucio_actual++;
+      nsol += recorrer(3 + (j + 4) / 9, (4 + j) % 9);  // fem calculs
+      printf(" \n Semisolucio trobada: ");
+      for (k = 0; k < posicions; k++)
+        printf("%i ", state[k]);
+      
     }
     while (j >= 0)  // ressetegem la taula
     {
@@ -123,17 +117,29 @@ int main(int nargs, char* args[])
         current_position--;
       }
       state[current_position]++; // incrementem el nombre al que li arriba la xifra portant
-      current_position = POSICIONS - 1;  
+      current_position = posicions - 1;  
     }
     else  // hem de sumar normal
     {
       state[current_position]++;
     }
   }
-  MPI_Reduce(&nsol, &total, 1, MPI_LONG_LONG_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-  MPI_Finalize();
-  if (id == 0)
+  printf("\n Solucions totals: %lld", nsol);
+  return num_solucio_actual;
+}
 
-    printf("\nnumero solucions : %lld\n", total);
+int main(int nargs, char* args[])
+{
+  int profunditat_actual, k, posicio = atoi(args[1]);
+  printf("Num pos explorades: %i\n", posicio);
+  int taula_resultats[posicio];
+  for (profunditat_actual = 0; profunditat_actual < posicio; profunditat_actual++)
+  {
+    taula_resultats[profunditat_actual] = num_valid_semisolutions(profunditat_actual);
+  }
+  for (k = 0; k < posicio; k++)
+  {
+    printf("\nA profunditat %i hi han %i solucions", k, taula_resultats[k]);
+  }
   return 0;
 }
