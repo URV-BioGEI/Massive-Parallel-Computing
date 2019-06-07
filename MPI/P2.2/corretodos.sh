@@ -3,6 +3,7 @@
 rm results.txt
 nodes=('2' '2' '4' '4' '8' '8' '8' )
 procesos=('2' '4' '4' '8' '8' '16' '32')
+npernodes=('2' '4')
 binari=('P2.2_CPM_Marine P2.2_CPM_Marine_Master-Slave P2.2_CPM_Marine_Depth7 P2.2_CPM_Marine_Non-Balanced P2.2_CPM_Marine_Non-Balanced_Depth7');
 for name in ${binari[@]}; do
 	echo "$name" >> results.txt
@@ -14,16 +15,31 @@ for name in ${binari[@]}; do
 		i="0"
 		while [ $i -lt 3 ]
 		do
-			echo "$i"
-			echo "salloc -p pops -N $core srun -n 1 time mpirun -host pop1,pop2,pop3,pop4,pop5,pop6,pop7,pop8 -c $proc ./$name 2>&1"
 			times=$(salloc -p pops -N $core srun -n 1 time mpirun -host pop1,pop2,pop3,pop4,pop5,pop6,pop7,pop8 -c $proc ./$name 2>&1)
 			result=$(echo "$times" | grep "elapsed" | cut -d ' ' -f3 | cut -c 3-7)
 			echo "result is $result"
-			echo "$times"
 			echo "$result" >> results.txt	
 			i=$[$i+1]
 		done
 		contproc=$[$contproc+1]
+	echo "8 x 2 64" >> results.txt
+	i="0"
+	while [ $i -lt 3 ]; do
+		times=$(salloc -p pops -N 8 srun -n 1 time mpirun -host pop1,pop2,pop3,pop4,pop5,pop6,pop7,pop8 -c 64 -npernode 2 ./$name 2>&1)
+		result=$(echo "$times" | grep "elapsed" | cut -d ' ' -f3 | cut -c 3-7)
+		echo "result is $result"
+		echo "$result" >> results.txt	
+		i=$[$i+1]
+	done
+
+	echo "8 x 4 128" >> results.txt
+	i="0"
+	while [ $i -lt 3 ]; do
+		times=$(salloc -p pops -N 8 srun -n 1 time mpirun -host pop1,pop2,pop3,pop4,pop5,pop6,pop7,pop8 -c 128 -npernode 4 ./$name 2>&1)
+		result=$(echo "$times" | grep "elapsed" | cut -d ' ' -f3 | cut -c 3-7)
+		echo "result is $result"
+		echo "$result" >> results.txt	
+		i=$[$i+1]
 	done
 done
 
