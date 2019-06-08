@@ -20,8 +20,7 @@ do
 		do
 			times=$(salloc -p pops -N $core srun -n 1 time mpirun -host pop1,pop2,pop3,pop4,pop5,pop6,pop7,pop8 -c $proc ./$name 2>&1)
 			result=$(echo "$times" | grep "elapsed" | cut -d ' ' -f3 | cut -c 3-7)
-			echo "result is $result"
-			echo "$result" >> results.txt	
+			python -c "print \"$result \"+ str(93.5 / $result)" | tee -a results.txt	
 			i=$[$i+1]
 		done
 		contproc=$[$contproc+1]
@@ -33,11 +32,9 @@ do
 	do
 		times=$(salloc -p pops -N 8 srun -n 1 time mpirun -host pop1,pop2,pop3,pop4,pop5,pop6,pop7,pop8 -c 64 -npernode 8 ./$name 2>&1)
 		result=$(echo "$times" | grep "elapsed" | cut -d ' ' -f3 | cut -c 3-7)
-		echo "result is $result"
-		echo "$result" >> results.txt	
+		python -c "print \"$result \"+ str(93.5 / $result)" | tee -a results.txt
 		i=$[$i+1]
 	done
-
 	echo "8 x 4 128"
 	echo "8 x 4 128" >> results.txt
 	i="0"
@@ -45,8 +42,7 @@ do
 	do
 		times=$(salloc -p pops -N 8 srun -n 1 time mpirun -host pop1,pop2,pop3,pop4,pop5,pop6,pop7,pop8 -c 128 -npernode 16 ./$name 2>&1)
 		result=$(echo "$times" | grep "elapsed" | cut -d ' ' -f3 | cut -c 3-7)
-		echo "result is $result"
-		echo "$result" >> results.txt	
+		python -c "print \"$result \"+ str(93.5 / $result)" | tee -a results.txt		
 		i=$[$i+1]
 	done
 done
