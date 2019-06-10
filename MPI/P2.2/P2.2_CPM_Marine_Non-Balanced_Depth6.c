@@ -75,7 +75,7 @@ return(s);
 /////////////////////////////////////////////////////////////////
 int main(int nargs, char* args[])
 {
-  int i, j, total_processos, id, num_solucio_actual = 0;
+  int i, j, total_processos, id;
 
   MPI_Init(&nargs, &args);
   MPI_Comm_rank(MPI_COMM_WORLD, &id);
@@ -103,13 +103,8 @@ int main(int nargs, char* args[])
       }
       if (flag)  // si flag vol dir que Podem posar tots els valors de state a cada posicio
       {
-        if (num_solucio_actual % total_processos == id)  // repartim equitativament entre processos
-        {
-          //printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4]);
           //printf("\n Proces %i porta %i solucions trobades i calculara solucio %i %i %i %i %i %i %i", id, num_solucio_actual, state[0], state[1], state[2], state[3], state[4], state[5], state[6]);
           nsol += recorrer(3 + (j + 4) / 9, (4 + j) % 9);  // fem calculs
-        }
-        num_solucio_actual++;
       }
       while (j >= 0)  // ressetegem la taula
       {
