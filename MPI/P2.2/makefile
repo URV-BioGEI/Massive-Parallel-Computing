@@ -30,7 +30,7 @@ P2.2_CPM_Marine_Non-Balanced_Depth7 : P2.2_CPM_Marine_Non-Balanced_Depth7.c
 P2.2_CPM_Marine_Non-Balanced_Depth8 : P2.2_CPM_Marine_Non-Balanced_Depth8.c
 	$(CC) $(CFLAGS) -o P2.2_CPM_Marine_Non-Balanced_Depth8 P2.2_CPM_Marine_Non-Balanced_Depth8.c
 
-run : P2.2_CPM_Marine_Master-Slave P2.2_CPM_Marine_Depth6 P2.2_CPM_Marine_Depth8 P2.2_CPM_Marine_Depth7 P2.2_CPM_Marine_Non-Balanced_Depth6 P2.2_CPM_Marine_Non-Balanced_Depth7 P2.2_CPM_Marine_Non-Balanced_Depth8 sudoku-secuencial
+run : P2.2_CPM_Marine_Master-Slave P2.2_CPM_Marine_Depth6 P2.2_CPM_Marine_Depth8 P2.2_CPM_Marine_Depth7 P2.2_CPM_Marine_Non-Balanced_Depth6 P2.2_CPM_Marine_Non-Balanced_Depth7 P2.2_CPM_Marine_Non-Balanced_Depth8
 	bash corretodos.sh
 
 runone : P2.2_CPM_Marine_Depth6
