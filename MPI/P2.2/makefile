@@ -21,7 +21,7 @@ P2.2_CPM_Marine_Depth7 : P2.2_CPM_Marine_Depth7.c
 P2.2_CPM_Marine_Non-Balanced : P2.2_CPM_Marine_Non-Balanced.c
 	$(CC) $(CFLAGS) -o P2.2_CPM_Marine_Non-Balanced P2.2_CPM_Marine_Non-Balanced.c
 
-P2.2_CPM_Marine_Non-Balanced_Depth7 : P2.2_CPM_Marine_Non-Balanced_Depth7
+P2.2_CPM_Marine_Non-Balanced_Depth7 : P2.2_CPM_Marine_Non-Balanced_Depth7.c
 	$(CC) $(CFLAGS) -o P2.2_CPM_Marine_Non-Balanced_Depth7 P2.2_CPM_Marine_Non-Balanced_Depth7.c
 
 run : P2.2_CPM_Marine sudoku_secuencial P2.2_CPM_Marine_Master-Slave P2.2_CPM_Marine_Depth7 P2.2_CPM_Marine_Non-Balanced P2.2_CPM_Marine_Non-Balanced_Depth7
