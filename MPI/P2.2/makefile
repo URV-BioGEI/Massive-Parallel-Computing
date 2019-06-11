@@ -1,7 +1,7 @@
 CC = mpicc
 CFLAGS = -O3 -Wall
 
-all : sudoku_secuencial P2.2_CPM_MarineRuiz P2.2_CPM_Marine_Depth6 P2.2_CPM_Marine_Master-Slave P2.2_CPM_Marine_Depth7 P2.2_CPM_Marine_Depth8 P2.2_CPM_Marine_Non-Balanced_Depth6 P2.2_CPM_Marine_Non-Balanced_Depth7 P2.2_CPM_Marine_Non-Balanced_Depth8
+all : sudoku_secuencial P2.2_CPM_MarineRuiz P2.2_CPM_Marine_Depth6 P2.2_CPM_Marine_Master-Slave P2.2_CPM_Marine_Depth7 P2.2_CPM_Marine_Depth8 P2.2_CPM_Marine_Depth5 P2.2_CPM_Marine_Non-Balanced_Depth6 P2.2_CPM_Marine_Non-Balanced_Depth7 P2.2_CPM_Marine_Non-Balanced_Depth8
 
 P2.2_CPM_MarineRuiz : P2.2_CPM_MarineRuiz.c
 	$(CC) $(CFLAGS) -o P2.2_CPM_MarineRuiz P2.2_CPM_MarineRuiz.c
@@ -21,6 +21,9 @@ P2.2_CPM_Marine_Depth7 : P2.2_CPM_Marine_Depth7.c
 P2.2_CPM_Marine_Depth8 : P2.2_CPM_Marine_Depth8.c
 	$(CC) $(CFLAGS) -o P2.2_CPM_Marine_Depth8 P2.2_CPM_Marine_Depth8.c
 
+P2.2_CPM_Marine_Depth5 : P2.2_CPM_Marine_Depth5.c
+	$(CC) $(CFLAGS) -o P2.2_CPM_Marine_Depth5 P2.2_CPM_Marine_Depth5.c
+
 P2.2_CPM_Marine_Non-Balanced_Depth6 : P2.2_CPM_Marine_Non-Balanced_Depth6.c
 	$(CC) $(CFLAGS) -o P2.2_CPM_Marine_Non-Balanced_Depth6 P2.2_CPM_Marine_Non-Balanced_Depth6.c
 
@@ -38,4 +41,4 @@ runone : P2.2_CPM_Marine_Depth6
 
 .PHONY : clean
 clean :
-	rm sudoku_secuencial P2.2_CPM_MarineRuiz P2.2_CPM_Marine_Depth6 P2.2_CPM_Marine_Master-Slave P2.2_CPM_Marine_Depth7 P2.2_CPM_Marine_Depth8 P2.2_CPM_Marine_Non-Balanced_Depth6 P2.2_CPM_Marine_Non-Balanced_Depth7 P2.2_CPM_Marine_Non-Balanced_Depth8
+	rm sudoku_secuencial P2.2_CPM_MarineRuiz P2.2_CPM_Marine_Depth6 P2.2_CPM_Marine_Master-Slave P2.2_CPM_Marine_Depth7 P2.2_CPM_Marine_Depth8 P2.2_CPM_Marine_Non-Balanced_Depth6 P2.2_CPM_Marine_Non-Balanced_Depth7 P2.2_CPM_Marine_Non-Balanced_Depth8 P2.2_CPM_Marine_Depth5.c
